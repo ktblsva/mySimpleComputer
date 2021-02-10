@@ -1,5 +1,6 @@
-#include "mySimpleComputer.c"
+
 #include <time.h>
+#include "mySimpleComputer.h"
 
 int main()
 {
@@ -23,16 +24,17 @@ int main()
     }
     printf("\n");
     sc_regInit();
-    sc_regSet(0, 0);
-    sc_regSet(1, 1);
-    sc_regSet(2, 0);
-    sc_regSet(3, 1);
-    sc_regSet(4, 0);
+    sc_regSet(1, 0);
+    sc_regSet(2, 1);
+    sc_regSet(3, 0);
+    sc_regSet(4, 1);
+    sc_regSet(5, 0);
     printf("Flags of register: ");
-    for (int i = 0; i < 5; i++) {
+    for (int i = 1; i <= 5; i++) {
         sc_regGet(i, &value);
         printf("%d ", value);
     }
+    printf("\n");
     sc_regGet(0, 0);
     printf("\n");
     int comm = -1;
