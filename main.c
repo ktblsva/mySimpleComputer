@@ -1,4 +1,4 @@
-#include "mySimpleComputer.h"
+#include "mySimpleComputer.c"
 #include <time.h>
 
 int main()
@@ -33,10 +33,17 @@ int main()
         sc_regGet(i, &value);
         printf("%d ", value);
     }
+    sc_regGet(0, 0);
     printf("\n");
-    int comm=-1;
+    int comm = -1;
+    int operand = -1;
     printf("Enter command(0-37): ");
     scanf("%d", &comm);
-    sc_commandEncode(comm, 0, &value);
+    printf("Enter operand(0-127): ");
+    scanf("%d", &operand);
+    sc_commandEncode(comm, operand, &value);
+    printf("\n %d", value);
+    sc_commandDecode(value, &comm, &operand);
+    printf("\n command: %d \n operand: %d \n", comm, operand);
     return 0;
 }

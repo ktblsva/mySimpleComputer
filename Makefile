@@ -1,2 +1,3 @@
+
 all:
-	gcc mySimpleComputer.h && gcc main.c
+	gcc mySimpleComputer.c && gcc main.c

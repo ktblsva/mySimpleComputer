@@ -1,5 +1,5 @@
-#ifndef MY_SIMPLE_COMPUTER_H
-#define MY_SIMPLE_COMPUTER_H
+// #ifndef MY_SIMPLE_COMPUTER_H
+// #define MY_SIMPLE_COMPUTER_H
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -21,7 +21,7 @@
 #define BIT_SET(X, Y) X = X | (1 << (Y - 1)) //устанавалиет единицу
 #define BIT_DEL(X, Y) X = X & (~(1 << (Y - 1))) //устанавливает ноль
 #define BIT_GET(X, Y) X >> (Y - 1) & 0x1 //возвращает нужный бит
-int sc_memory[MEMORYSIZE];
+static int sc_memory[MEMORYSIZE];
 int sc_reg;
 int commands[] = {0x10, 0x11, 0x20, 0x21, 0x30, 0x31, 0x32, 0x33, 0x40, 0x41,
                   0x42, 0x43, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
@@ -41,7 +41,7 @@ int sc_memorySet(int address, int value)
     if (address >= 0 && address < MEMORYSIZE) {
         sc_memory[address] = value;
         BIT_DEL(sc_reg, FLAG_MEMORY_BORDER);
-
+        
     } else {
         printf("ERR_WRONG_ADDRESS\n");
         BIT_SET(sc_reg, FLAG_MEMORY_BORDER);
@@ -55,7 +55,7 @@ int sc_memoryGet(int address, int* value)
     if (address >= 0 && address < MEMORYSIZE) {
         *value = sc_memory[address];
         BIT_DEL(sc_reg, FLAG_MEMORY_BORDER);
-
+        
     } else {
         printf("ERR_WRONG_ADDRESS\n");
         BIT_SET(sc_reg, FLAG_MEMORY_BORDER);
@@ -111,9 +111,7 @@ int sc_regSet(int reg, int value)
                 return ERR_WRONG_VALUE;
             }
         }
-    } 
-    else 
-    {
+    } else {
         printf("ERR_WRONG_FLAG\n");
         return ERR_WRONG_FLAG;
     }
@@ -173,4 +171,4 @@ int sc_commandDecode(int value, int* command, int* operand)
     }
 }
 
-#endif // MY_SIMPLE_COMPUTER_H
+// #endif // MY_SIMPLE_COMPUTER_H
