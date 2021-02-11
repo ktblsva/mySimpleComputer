@@ -1,0 +1,13 @@
+#!/bin/bash
+echo -e "\E[H\E[2J"
+echo -e "\E[0;31m"
+echo -e "\E[40m"
+echo -e -n "\E[5;10H"
+echo -e -n "Белоусова Екатерина\n"
+echo -e "\E[0;32m"
+echo -e "\E[47m"
+echo -e -n "\E[6;8H"
+echo -e -n "ИП-911\n"
+echo -e "\E[0;39m"
+echo -e "\E[49m"
+echo -e -n "\E[10;1H"
