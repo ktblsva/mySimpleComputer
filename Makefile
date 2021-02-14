@@ -7,13 +7,15 @@ prog: main.o lib.a
 main.o: main.c 
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-lib.a: mySimpleComputer.o
+lib.a: mySimpleComputer.o myTerm.o
 	ar rcs $@ $^
 
 mySimpleComputer.o: mySimpleComputer.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
--include main.d mySimpleComputer.d 
+myTerm.o: myTerm.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 
 clean:
 	-rm -rf *.o

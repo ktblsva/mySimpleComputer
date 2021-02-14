@@ -76,11 +76,11 @@ int showMemory(int x, int y) {
   int wid, heig;
   mt_getScreenSize(&wid, &heig);
   printf("%d x %d \n", wid, heig);
-  printf("1: %d ", mt_goToXY(x + width / 2 - 3 + 1, y));
+  mt_goToXY(x + width / 2 - 3 + 1, y);
   mt_printText("Memory");
   int cell = 0;
   for (int i = 1; i < 11; i++) {
-    printf("2: %d ", mt_goToXY(2 + x, y + i));
+    mt_goToXY(2 + x, y + i);
     for (int j = 1; j < 11; j++) {
       char buff[6];
       int value;
