@@ -3,6 +3,36 @@
 #include "myTerm.h"
 #include <time.h>
 
+int showMemory(int x, int y) {
+
+  int width = 10 * 5 + 9 + 2;
+  // int height = 11;
+  // mt_goToXY(x + width / 2 - 3 + 1, y);
+  int wid, heig;
+  mt_getScreenSize(&wid, &heig);
+  printf("%d x %d \n", wid, heig);
+  printf("1: %d ", mt_goToXY(x + width / 2 - 3 + 1, y));
+  mt_printText("Memory");
+  int cell = 0;
+  for (int i = 1; i < 11; i++) {
+    printf("2: %d ", mt_goToXY(2 + x, y + i + 1));
+    for (int j = 1; j < 11; j++) {
+      char buff[6];
+      int value;
+      sc_memoryGet(cell, &value);
+      cell++;
+      sprintf(buff, "+%.4i", value);
+      mt_printText(buff);
+      if (j != 10) {
+        mt_printText(" ");
+      }
+    }
+  }
+
+  mt_printText("\n");
+  return 0;
+}
+
 int main() {
   srand(time(NULL));
   sc_memoryInit();
@@ -50,5 +80,6 @@ int main() {
   sc_commandDecode(value, &comm, &operand);
   printf("\n command: %d \n operand: %d \n", comm, operand);
   mt_clrscr();
+  showMemory(1, 1);
   return 0;
 }
