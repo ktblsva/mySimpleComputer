@@ -1,0 +1,3 @@
+smacs=\E(0 //enter_alt_charset_mode
+rmacs=\E(B //exit_alt_charset_mode
+acsc=``aaffggiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~ //символы псевдографики acs_chars

@@ -148,5 +148,6 @@ int main() {
   showMemory(1, 1);
   showFlags(10 * 5 + 9 + 2, 9);
   showKeys(61 - 15 + 1 + 1, 12 + 1);
+  //mt_printText("\E[?25l");
   return 0;
 }

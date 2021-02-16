@@ -16,7 +16,6 @@ mySimpleComputer.o: mySimpleComputer.c
 myTerm.o: myTerm.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-
 clean:
 	-rm -rf *.o
 	-rm -rd *.a
