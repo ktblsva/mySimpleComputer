@@ -9,6 +9,10 @@ int showFlags(int x, int y);
 int showKeys(int x, int y);
 int showBigChars(int x, int y);
 int showAccumulator(int x, int y);
+int showInstructionCounter(int x, int y);
+int showOperation(int x, int y);
+
+#define HighlightColor Red 
 
 
 int main() 
@@ -20,6 +24,8 @@ int main()
     showKeys(61 - 15 + 1 + 1, 12 + 1);
     showBigChars(1,13);
     showAccumulator(10 * 5 + 9 + 4, 1);
+    showInstructionCounter(10 * 5 + 9 + 4,1 + 3);
+    showOperation(10 * 5 + 9 + 4, 1 + 3 + 3);
     mt_printText("\E[?25l");
 
     return 0;
@@ -113,9 +119,17 @@ int showMemory(int x, int y)
             char buff[6];
             int value;
             sc_memoryGet(cell, &value);
+            if (cell == sc_instructionCounter)
+            {
+                mt_setBgColor(HighlightColor);
+            }
             cell++;
             sprintf(buff, "+%.4i", value);
             mt_printText(buff);
+            if (cell - 1 == sc_instructionCounter)
+            {
+                mt_setBgColor(Default);
+            }
             if (j != 10) 
             {
                 mt_printText(" ");
@@ -183,7 +197,7 @@ int showBigChars (int x, int y)
                 bc_arrayToBig(big,bc_char_0);
         }
 
-        bc_printBigChar(big, x + 1 + (8 * i), y + 1,White,Black);
+        bc_printBigChar(big, x + 1 + 1 * i + (8 * i), y + 1,White,Default);
     }
 
     return 0;
@@ -191,10 +205,45 @@ int showBigChars (int x, int y)
 
 int showAccumulator (int x, int y)
 {
+
     int width = 22; 
     int height = 3;
 
     bc_panel(x,y,width,height);
 
+    mt_goToXY(x + width / 2 - 11 / 2,y);
+    mt_printText("Accumulator");
+
     return 0;
+}
+
+int showInstructionCounter (int x, int y)
+{
+    int width = 22; 
+    int height = 3;
+
+    bc_panel(x,y,width,height);
+
+    mt_goToXY(x + width / 2 - 19 / 2, y);
+    mt_printText("Instruction Counter");
+
+    mt_goToXY(x + width / 2 - 5 / 2, y + 1);
+    char buff[6];
+    int value;
+    value = 0;
+    sc_memoryGet(sc_instructionCounter, &value);
+    sprintf(buff,"+%.4i", value);
+    mt_printText(buff);
+
+}
+
+int showOperation(int x, int y)
+{
+    int width = 22; 
+    int height = 3;
+
+    bc_panel(x,y,width,height);
+
+    mt_goToXY(x + width / 2 - 9 / 2, y);
+    mt_printText("Operation");   
 }

@@ -1,7 +1,7 @@
 CFLAGS = -g
 CC = gcc
-all: prog clean
-prog: main.o lib.a
+all: SimpleComputer clean
+SimpleComputer: main.o lib.a
 	$(CC) $(CFLAGS) -o $@ $^
 
 main.o: main.c 
