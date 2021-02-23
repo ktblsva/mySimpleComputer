@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Werror
+CFLAGS = -g
 CC = gcc
 all: prog clean
 prog: main.o lib.a
@@ -7,13 +7,16 @@ prog: main.o lib.a
 main.o: main.c 
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-lib.a: mySimpleComputer.o myTerm.o
+lib.a: mySimpleComputer.o myTerm.o myBigChars.o
 	ar rcs $@ $^
 
 mySimpleComputer.o: mySimpleComputer.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 myTerm.o: myTerm.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+myBigChars.o: myBigChars.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
