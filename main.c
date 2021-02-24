@@ -2,6 +2,7 @@
 #include "mySimpleComputer.h"
 #include "myTerm.h"
 #include "myBigChars.h"
+#include "myReadkey.h"
 #include <time.h>
 
 int showMemory(int x, int y);
@@ -14,11 +15,55 @@ int showOperation(int x, int y);
 
 #define HighlightColor Red 
 
-
+void print_key(enum keys key)
+{
+    switch (key) {
+        case KEY_l:
+            printf("l\n");
+            break;
+        case KEY_s:
+            printf("s\n");
+            break;
+        case KEY_r:
+            printf("r\n");
+            break;
+        case KEY_t:
+            printf("t\n");
+            break;
+        case KEY_i:
+            printf("i\n");
+            break;
+        case KEY_q:
+            printf("q\n");
+            break;
+        case KEY_up:
+            printf("up\n");
+            break;
+        case KEY_down:
+            printf("down\n");
+            break;
+        case KEY_left:
+            printf("left\n");
+            break;
+        case KEY_right:
+            printf("right\n");
+            break;
+        case KEY_f5:
+            printf("F5\n");
+            break;
+        case KEY_f6:
+            printf("F6\n");
+            break;
+    }
+}
 int main() 
 {
+    enum keys key;
+    rk_mytermsave();
+    rk_mytermregime(0, 0, 1, 0, 1);
     mt_clrscr();
-
+    printf("Terminal settings restored.\n");
+    rk_mytermrestore();
     showMemory(1, 1);
     showFlags(10 * 5 + 9 + 4, 10);
     showKeys(61 - 15 + 1 + 1, 12 + 1);
@@ -26,8 +71,11 @@ int main()
     showAccumulator(10 * 5 + 9 + 4, 1);
     showInstructionCounter(10 * 5 + 9 + 4,1 + 3);
     showOperation(10 * 5 + 9 + 4, 1 + 3 + 3);
-    mt_printText("\E[?25l");
-
+    //mt_printText("\E[?25l");
+    do {
+        rk_readkey(&key);
+        print_key(key);
+    } while (key != KEY_q);
     return 0;
 }
 
