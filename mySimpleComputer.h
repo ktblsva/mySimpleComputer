@@ -22,6 +22,7 @@
 #define BIT_DEL(X, Y) X = X & (~(1 << (Y - 1))) //устанавливает ноль
 #define BIT_GET(X, Y) X >> (Y - 1) & 0x1 //возвращает нужный бит
 int sc_instructionCounter;
+int sc_accumulator;
 int sc_memory[MEMORYSIZE];
 int sc_reg;
 // extern int commands[] = {0x10, 0x11, 0x20, 0x21, 0x30, 0x31, 0x32, 0x33,

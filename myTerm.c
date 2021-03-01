@@ -1,5 +1,15 @@
 #include "myTerm.h"
 
+int mt_readText(char *text) {
+  int terminal = open(TERM, O_RDWR);
+  if (terminal == -1) {
+    return ERR_TERM;
+  }
+  int numRead = read(terminal, text, sizeof(text));
+  text[numRead] = '\0';
+  return 0;
+}
+
 int mt_printText(char *text) {
   int terminal = open(TERM, O_RDWR);
   if (terminal == -1) {

@@ -50,7 +50,7 @@ int rk_readkey(enum keys *key)
 		*key = KEY_q;
 	}
 	else
-	if (strcmp(buf, "\n") == 0)
+	if (strcmp(buf, "\r") == 0) // \EOM
 	{
 		*key = KEY_enter;
 	}
@@ -202,7 +202,7 @@ int rk_mytermregime(int regime, int vtime, int vmin, int echo, int sigint)
         	return -1;
         }
     }
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &termOrig) != 0)
+    if (tcsetattr(terminal, TCSANOW, &termOrig) != 0)
     {
 		return -1;
     }

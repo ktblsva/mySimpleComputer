@@ -4,7 +4,9 @@
 #include "myBigChars.h"
 #include "myReadkey.h"
 #include <time.h>
+#include <unistd.h>
 
+int cursor = 0; int cursorX = 0; int cursorY;
 int showMemory(int x, int y);
 int showFlags(int x, int y);
 int showKeys(int x, int y);
@@ -12,6 +14,7 @@ int showBigChars(int x, int y);
 int showAccumulator(int x, int y);
 int showInstructionCounter(int x, int y);
 int showOperation(int x, int y);
+int keyHandler(enum keys key);
 
 #define HighlightColor Red 
 
@@ -56,26 +59,35 @@ void print_key(enum keys key)
             break;
     }
 }
+
 int main() 
 {
     enum keys key;
     rk_mytermsave();
     rk_mytermregime(0, 0, 1, 0, 1);
     mt_clrscr();
-    printf("Terminal settings restored.\n");
-    rk_mytermrestore();
-    showMemory(1, 1);
-    showFlags(10 * 5 + 9 + 4, 10);
-    showKeys(61 - 15 + 1 + 1, 12 + 1);
-    showBigChars(1,13);
-    showAccumulator(10 * 5 + 9 + 4, 1);
-    showInstructionCounter(10 * 5 + 9 + 4,1 + 3);
-    showOperation(10 * 5 + 9 + 4, 1 + 3 + 3);
-    //mt_printText("\E[?25l");
-    do {
+    mt_printText("\E[?25l");
+
+    do{
+        mt_clrscr();
+        showMemory(1, 1);
+        showFlags(10 * 5 + 9 + 4, 10);
+        showKeys(61 - 15 + 1 + 1, 12 + 1);
+        showBigChars(1,13);
+        showAccumulator(10 * 5 + 9 + 4, 1);
+        showInstructionCounter(10 * 5 + 9 + 4,1 + 3);
+        showOperation(10 * 5 + 9 + 4, 1 + 3 + 3);
+
         rk_readkey(&key);
-        print_key(key);
+        //print_key(key);
+        keyHandler(key);
+        
     } while (key != KEY_q);
+
+    mt_clrscr();
+    //printf("Terminal settings restored.\n");
+    rk_mytermrestore();
+    mt_printText("\E[?12;25h");
     return 0;
 }
 
@@ -167,14 +179,16 @@ int showMemory(int x, int y)
             char buff[6];
             int value;
             sc_memoryGet(cell, &value);
-            if (cell == sc_instructionCounter)
+            if (cell == cursor)
             {
                 mt_setBgColor(HighlightColor);
+                cursorX = (2 + x) + 6 * (j - 1);
+                cursorY = y + i;
             }
             cell++;
             sprintf(buff, "+%.4i", value);
             mt_printText(buff);
-            if (cell - 1 == sc_instructionCounter)
+            if (cell - 1 == cursor)
             {
                 mt_setBgColor(Default);
             }
@@ -262,6 +276,14 @@ int showAccumulator (int x, int y)
     mt_goToXY(x + width / 2 - 11 / 2,y);
     mt_printText("Accumulator");
 
+    mt_goToXY(x + width / 2 - (5 / 2), y + 1);
+    char buff[6];
+    int value;
+    value = 0;
+    sc_memoryGet(sc_accumulator, &value);
+    sprintf(buff,"+%.4i", value);
+    mt_printText(buff);
+
     return 0;
 }
 
@@ -275,7 +297,7 @@ int showInstructionCounter (int x, int y)
     mt_goToXY(x + width / 2 - 19 / 2, y);
     mt_printText("Instruction Counter");
 
-    mt_goToXY(x + width / 2 - 5 / 2, y + 1);
+    mt_goToXY(x + width / 2 - (5 / 2), y + 1);
     char buff[6];
     int value;
     value = 0;
@@ -294,4 +316,92 @@ int showOperation(int x, int y)
 
     mt_goToXY(x + width / 2 - 9 / 2, y);
     mt_printText("Operation");   
+}
+
+int keyHandler(enum keys key)
+{
+
+    switch (key) {
+        case KEY_l:
+            sc_memoryLoad("memory");
+            break;
+        case KEY_s:
+            sc_memorySave("memory");
+            break;
+        case KEY_r:
+            printf("r\n");
+            break;
+        case KEY_t:
+            printf("t\n");
+            break;
+        case KEY_i:
+            printf("i\n");
+            break;
+        case KEY_up:
+
+            if ((cursor - 10) >= 0)
+            {
+                cursor -= 10;
+            }
+            else
+            {
+                cursor += 90;
+            }
+
+            break;
+        case KEY_down:
+
+            if ((cursor + 10) <= 99)
+            {
+                cursor += 10;
+            }
+            else
+            {
+                cursor -= 90;
+            }
+
+            break;
+        case KEY_left:
+
+            if ((cursor - 1) >= 0)
+            {
+                cursor--;
+            }
+            else
+            {
+                cursor = 99;
+            }
+
+            break;
+        case KEY_right:
+
+            if ((cursor + 1) <= 99)
+            {
+                cursor++;
+            }
+            else
+            {
+                cursor = 0;
+            }
+
+            break;
+        case KEY_f5:
+            
+            sc_accumulator = cursor;
+            break;
+        case KEY_f6:
+
+            sc_instructionCounter = cursor;
+            break;
+        case KEY_enter:
+            mt_goToXY(cursorX,cursorY);
+            mt_printText("+    ");
+            mt_goToXY(cursorX + 1,cursorY);
+            rk_mytermregime(0, 0, 4, 1, 1);
+            char text[5];
+            mt_readText(text);
+            sc_memorySet(cursor, atoi(text));
+            break;  
+    }
+    return 0;
 }
