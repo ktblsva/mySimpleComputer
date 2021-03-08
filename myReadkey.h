@@ -8,7 +8,7 @@
 #include <string.h>
 
 #define ERR_TERM -1
-#define TERM "/dev/tty3"
+#define TERM "/dev/tty"
 enum keys {
 	KEY_l,
 	KEY_s,

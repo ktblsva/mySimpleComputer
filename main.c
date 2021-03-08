@@ -69,7 +69,7 @@ int main()
     mt_printText("\E[?25l");
 
     do{
-        mt_clrscr();
+        //mt_clrscr();
         showMemory(1, 1);
         showFlags(10 * 5 + 9 + 4, 10);
         showKeys(61 - 15 + 1 + 1, 12 + 1);

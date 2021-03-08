@@ -10,7 +10,7 @@
 
 #define ERR_TERM -1
 #define ERR_TERM_SIZE -2
-#define TERM "/dev/tty3"
+#define TERM "/dev/tty"
 
 enum Colors {
   Black,
