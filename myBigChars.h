@@ -12,7 +12,6 @@
 #define ERR_TERM -1
 #define ERR_WRITE -2
 #define ERR_READ -3
-#define TERM "/dev/tty"
 
 #define LT "┌" // left top
 #define LB "└" // left bottom

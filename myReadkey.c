@@ -50,12 +50,12 @@ int rk_readkey(enum keys *key)
 		*key = KEY_q;
 	}
 	else
-	if (strcmp(buf, "\r") == 0) // \EOM
+	if ((strcmp(buf, "\n") == 0) || (strcmp(buf, "\r") == 0)) // \r
 	{
 		*key = KEY_enter;
 	}
 	else
-	if (strcmp(buf, "\E[[E") == 0) //  \E[15~
+	if ((strcmp(buf, "\E[15~") == 0) || (strcmp(buf, "\E[[E") == 0)) //  \E[15~ \E[[E
 	{
 		*key = KEY_f5;
 	}

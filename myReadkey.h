@@ -6,9 +6,9 @@
 #include <unistd.h>
 #include <termios.h>
 #include <string.h>
+#include "myTerm.h"
 
 #define ERR_TERM -1
-#define TERM "/dev/tty"
 enum keys {
 	KEY_l,
 	KEY_s,

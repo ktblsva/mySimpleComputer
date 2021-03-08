@@ -6,7 +6,8 @@
 #include <time.h>
 #include <unistd.h>
 
-int cursor = 0; int cursorX = 0; int cursorY;
+
+int cursorX = 0; int cursorY = 0; int icX; int icY; int acX; int acY;
 int showMemory(int x, int y);
 int showFlags(int x, int y);
 int showKeys(int x, int y);
@@ -60,7 +61,7 @@ void print_key(enum keys key)
     }
 }
 
-int main() 
+int main(int argc, char **argv) 
 {
     enum keys key;
     rk_mytermsave();
@@ -179,16 +180,16 @@ int showMemory(int x, int y)
             char buff[6];
             int value;
             sc_memoryGet(cell, &value);
-            if (cell == cursor)
+            if (cell == sc_instructionCounter)
             {
                 mt_setBgColor(HighlightColor);
                 cursorX = (2 + x) + 6 * (j - 1);
                 cursorY = y + i;
             }
             cell++;
-            sprintf(buff, "+%.4i", value);
+            sprintf(buff, "+%.4X", value);
             mt_printText(buff);
-            if (cell - 1 == cursor)
+            if (cell - 1 == sc_instructionCounter)
             {
                 mt_setBgColor(Default);
             }
@@ -214,7 +215,7 @@ int showBigChars (int x, int y)
     int value;
     value = 3;
     sc_memoryGet(sc_instructionCounter, &value);
-    sprintf(buff,"+%.4i", value);
+    sprintf(buff,"+%.4X", value);
 
     for (int i = 0; i < strlen(buff); i++)
     {
@@ -255,6 +256,24 @@ int showBigChars (int x, int y)
             case '9':
                 bc_arrayToBig(big,bc_char_9);
                 break;
+            case 'A':
+                bc_arrayToBig(big,bc_char_A);
+                break;
+            case 'B':
+                bc_arrayToBig(big,bc_char_B);
+                break;
+            case 'C':
+                bc_arrayToBig(big, bc_char_C);
+                break;
+            case 'D':
+                bc_arrayToBig(big, bc_char_D);
+                break;
+            case 'E':
+                bc_arrayToBig(big,  bc_char_E);
+                break;
+            case 'F':
+                bc_arrayToBig(big, bc_char_F);
+                break;
             default:
                 bc_arrayToBig(big,bc_char_0);
         }
@@ -277,11 +296,9 @@ int showAccumulator (int x, int y)
     mt_printText("Accumulator");
 
     mt_goToXY(x + width / 2 - (5 / 2), y + 1);
+    acX = x + width / 2 - (5 / 2); acY = y + 1;
     char buff[6];
-    int value;
-    value = 0;
-    sc_memoryGet(sc_accumulator, &value);
-    sprintf(buff,"+%.4i", value);
+    sprintf(buff,"+%.4X", sc_accumulator);
     mt_printText(buff);
 
     return 0;
@@ -298,11 +315,9 @@ int showInstructionCounter (int x, int y)
     mt_printText("Instruction Counter");
 
     mt_goToXY(x + width / 2 - (5 / 2), y + 1);
+    icX = x + width / 2 - (5 / 2); icY = y + 1;
     char buff[6];
-    int value;
-    value = 0;
-    sc_memoryGet(sc_instructionCounter, &value);
-    sprintf(buff,"+%.4i", value);
+    sprintf(buff,"+%.4X", sc_instructionCounter);
     mt_printText(buff);
 
 }
@@ -339,68 +354,92 @@ int keyHandler(enum keys key)
             break;
         case KEY_up:
 
-            if ((cursor - 10) >= 0)
+            if ((sc_instructionCounter - 10) >= 0)
             {
-                cursor -= 10;
+                sc_instructionCounter -= 10;
             }
             else
             {
-                cursor += 90;
+                sc_instructionCounter += 90;
             }
 
             break;
         case KEY_down:
 
-            if ((cursor + 10) <= 99)
+            if ((sc_instructionCounter + 10) <= 99)
             {
-                cursor += 10;
+                sc_instructionCounter += 10;
             }
             else
             {
-                cursor -= 90;
+                sc_instructionCounter -= 90;
             }
 
             break;
         case KEY_left:
 
-            if ((cursor - 1) >= 0)
+            if ((sc_instructionCounter - 1) >= 0)
             {
-                cursor--;
+                sc_instructionCounter--;
             }
             else
             {
-                cursor = 99;
+                sc_instructionCounter = 99;
             }
 
             break;
         case KEY_right:
 
-            if ((cursor + 1) <= 99)
+            if ((sc_instructionCounter + 1) <= 99)
             {
-                cursor++;
+                sc_instructionCounter++;
             }
             else
             {
-                cursor = 0;
+                sc_instructionCounter = 0;
             }
 
             break;
         case KEY_f5:
+            mt_goToXY(acX,acY);
+            mt_printText("+    ");
+            mt_goToXY(acX + 1,acY);
+            rk_mytermregime(0, 0, 4, 1, 1);
+            char buffA[5];
+            mt_readText(buffA);
+            int valueA;
+            sscanf(buffA,"%x",&valueA);
+            sc_accumulator = valueA;
             
-            sc_accumulator = cursor;
             break;
         case KEY_f6:
 
-            sc_instructionCounter = cursor;
+            mt_goToXY(icX,icY);
+            mt_printText("+    ");
+            mt_goToXY(icX + 1,icY);
+            rk_mytermregime(0, 0, 4, 1, 1);
+            char buffI[5];
+            mt_readText(buffI);
+            int valueI;
+            sscanf(buffI,"%x",&valueI);
+            
+            if ((valueI >= 0) && (valueI < 100))
+            {
+                sc_instructionCounter = valueI;
+            }
+                        
             break;
         case KEY_enter:
+
             mt_goToXY(cursorX,cursorY);
             mt_printText("+    ");
             mt_goToXY(cursorX + 1,cursorY);
             rk_mytermregime(0, 0, 4, 1, 1);
-            char text[5];
-            mt_readText(text);
-            sc_memorySet(cursor, atoi(text));
+            char buffM[5];
+            mt_readText(buffM);
+            int valueM;
+            sscanf(buffM,"%x",&valueM);
+            sc_memorySet(sc_instructionCounter, valueM);
             break;  
     }
     return 0;
