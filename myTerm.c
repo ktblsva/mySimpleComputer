@@ -37,7 +37,7 @@ int mt_getScreenSize(int *rows, int *columns) {
     unsigned short xpixel;
     unsigned short ypixel;
   };
-
+  
   struct winsize ws;
 
   if (!ioctl(1, TIOCGWINSZ, &ws)) {

@@ -63,6 +63,7 @@ void print_key(enum keys key)
 
 int main(int argc, char **argv) 
 {
+    sc_regInit();
     enum keys key;
     rk_mytermsave();
     rk_mytermregime(0, 0, 1, 0, 1);
@@ -426,6 +427,10 @@ int keyHandler(enum keys key)
             if ((valueI >= 0) && (valueI < 100))
             {
                 sc_instructionCounter = valueI;
+            }
+            else
+            {
+                sc_regSet(3,1);
             }
                         
             break;
