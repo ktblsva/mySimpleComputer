@@ -189,13 +189,6 @@ char bc_char_F[] = {
 
 int bc_panel(int left, int top, int width, int height)
 {
-	int terminal = open(TERM, O_RDWR);
-
-	if (terminal == -1)
-	{
-		return ERR_TERM;
-	}
-
 	mt_goToXY(left, top);
 	mt_printText(LT);
 

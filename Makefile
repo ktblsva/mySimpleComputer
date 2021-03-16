@@ -7,7 +7,7 @@ SimpleComputer: main.o lib.a
 main.o: main.c 
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-lib.a: mySimpleComputer.o myTerm.o myBigChars.o myReadkey.o
+lib.a: mySimpleComputer.o myTerm.o myBigChars.o myReadkey.o mySignal.o myGUI.o
 	ar rcs $@ $^
 
 mySimpleComputer.o: mySimpleComputer.c
@@ -21,6 +21,13 @@ myBigChars.o: myBigChars.c
 
 myReadkey.o: myReadkey.c
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+mySignal.o: mySignal.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+myGUI.o: myGUI.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 clean:
 	-rm -rf *.o
 	-rm -rd *.a
