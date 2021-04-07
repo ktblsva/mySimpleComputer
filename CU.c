@@ -131,9 +131,13 @@ int CU()
 	}
 	int flag = 0;
 	sc_regGet(FLAG_IGNOR_PULS, &flag);
-	if((sc_instructionCounter < 100 && sc_instructionCounter >= 0) || !flag)
+	if((sc_instructionCounter < 99 && sc_instructionCounter >= 0) && !flag)
 	{
 		sc_instructionCounter++;
+	}
+	else if (sc_instructionCounter >= 99)
+	{
+		sc_instructionCounter = 0;
 	}
 	mg_showGUI(1,1);
 	return 0;

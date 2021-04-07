@@ -11,16 +11,6 @@ int ms_timerHandler(int sig)
 {
 	CU();
 
-	if ((sc_instructionCounter + 1) <= 99)
-    {
-    	sc_instructionCounter++;
-    }
-    else
-    {
-    	sc_instructionCounter = 0;
-    }
-	mg_showGUI(1,1);
-
 	int value;
 	sc_regGet(FLAG_IGNOR_PULS, &value);
 	if (!value)
