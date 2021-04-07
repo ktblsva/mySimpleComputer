@@ -94,7 +94,17 @@ int sc_regGet(int reg, int *value) {
 }
 
 int sc_commandEncode(int command, int operand, int *value) {
-  int isCommand = 1;
+  int isCommand = 0;
+
+  for (int i = 0; i < 14; i++)
+  {
+    if (command == sc_commands[i])
+    {
+      isCommand = 1;
+    }
+  }
+
+
 
   if (isCommand) {
     if ((operand >= 0) && (operand < 128)) {
@@ -110,7 +120,7 @@ int sc_commandEncode(int command, int operand, int *value) {
     }
   } else {
     //printf("ERR_WRONG_COMMAND\n");
-    BIT_SET(sc_reg, FLAG_WRONG_COMMAND);
+    sc_regSet(FLAG_WRONG_COMMAND,1);
     return ERR_WRONG_COMMAND;
   }
 }

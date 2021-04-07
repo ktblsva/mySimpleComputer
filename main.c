@@ -126,7 +126,7 @@ int keyHandler(enum keys key)
         		sprintf(buffA,"%s%s", buffA, buffAs);
         		int valueA;
                 sscanf(buffA,"%x",&valueA);
-                sc_accumulator = valueA * sign;
+                sc_accumulator = valueA;
                 break;
             case KEY_f6:
                 mt_goToXY(cursorX, cursorY);
