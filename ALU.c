@@ -1,4 +1,4 @@
-#include "SimpleComputer.h"
+#include "ALU.h"
 
 int ALU(int command, int operand)
 {
@@ -25,7 +25,9 @@ int ALU(int command, int operand)
 				break;
 		case 0x52: //логич и
 				//sc_accumulator &= tmp;
+				;
 				int a = sc_accumulator;
+				int b = operand;
 				for(int i = 0; i < 8; i++)
 				{
 					if((a & (1 << i)) & (b & (1 << i)))

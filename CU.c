@@ -1,14 +1,10 @@
-#include "SimpleComputer.h"
-#include "ALU.c"
-#include "myGUI.h"
-#include "myTerm.h"
-#include "string.h"
+#include "CU.h"
 
 int READ(int operand)
 {
 	mt_goToXY(cursorX, cursorY);
 	mt_printText(" Input value(dec):> ");
-	rk_myTermRegime(0, 0, 4, 1, 1);
+	rk_mytermregime(0, 0, 4, 1, 1);
 	char buffer[5];
 	mt_readText(buffer);
 	int value = atoi(buffer);
@@ -98,7 +94,7 @@ int CU()
 	}	
 	if (((command >= 0x30) && (command <= 0x33)) || (command == 0x52))
 	{
-		ALU();
+		ALU(command, operand);
 	}
 	else
 	{
@@ -140,5 +136,5 @@ int CU()
 		sc_instructionCounter++;
 	}
 	mg_showGUI(1,1);
-	return;
+	return 0;
 }

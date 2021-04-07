@@ -1,4 +1,5 @@
 #include "mySignal.h"
+#include "CU.h"
 
 int ms_setSignals()
 {
@@ -8,6 +9,8 @@ int ms_setSignals()
 
 int ms_timerHandler(int sig)
 {
+	CU();
+
 	if ((sc_instructionCounter + 1) <= 99)
     {
     	sc_instructionCounter++;
