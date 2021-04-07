@@ -25,7 +25,7 @@ int sc_instructionCounter;
 int sc_accumulator;
 int sc_memory[MEMORYSIZE];
 int sc_reg;
-extern int commands[] = {0x10, 0x11, 0x20, 0x21, 0x30, 0x31, 0x32, 0x33, 0x40, 0x41, 0x42, 0x43, 0x52, 0x55};
+extern int sc_commands[];
 
 int sc_memoryInit();
 int sc_memorySet(int address, int value);
