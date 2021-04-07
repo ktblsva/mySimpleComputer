@@ -3,7 +3,7 @@
 int ALU(int command, int operand)
 {
 	int tmp;
-	sc_memoryGet(operand, tmp);
+	sc_memoryGet(operand, &tmp);
 	switch(command)
 	{
 		case 0x30: //сложение, результат в акк
@@ -24,7 +24,15 @@ int ALU(int command, int operand)
 				sc_accumulator *= tmp;
 				break;
 		case 0x52: //логич и
-				sc_accumulator &= tmp;
+				//sc_accumulator &= tmp;
+				int a = sc_accumulator;
+				for(int i = 0; i < 8; i++)
+				{
+					if((a & (1 << i)) & (b & (1 << i)))
+					{
+						sc_accumulator |= 1 << i;
+					}
+				}
 				break; 
 	}
 	if ((sc_accumulator > 0x7FFF) || (sc_accumulator < 0)) 
