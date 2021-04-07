@@ -7,7 +7,7 @@
 
 #define HighlightColor Red 
 
-int cursorX; int cursorY; int icX; int icY; int acX; int acY;
+int cursorX; int cursorY;
 int mg_showGUI(int x, int y);
 int mg_showKeys(int x, int y);
 int mg_showFlags(int x, int y);
@@ -16,5 +16,6 @@ int mg_showBigChars (int x, int y);
 int mg_showAccumulator (int x, int y);
 int mg_showInstructionCounter (int x, int y);
 int mg_showOperation(int x, int y);
+int mg_showInputField(int x, int y);
 
 #endif // MYGUI_H

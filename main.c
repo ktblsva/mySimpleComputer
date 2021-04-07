@@ -41,7 +41,7 @@ int keyHandler(enum keys key)
     int ignore;
     sc_regGet(FLAG_IGNOR_PULS,&ignore);
 
-    if (!ignore)
+    if (ignore)
     {
 
         switch (key) 
@@ -101,24 +101,37 @@ int keyHandler(enum keys key)
 
                 break;
             case KEY_f5:
-                alarm(0);
-                mt_goToXY(acX,acY);
-                mt_printText("+    ");
-                mt_goToXY(acX + 1,acY);
-                rk_mytermregime(0, 0, 4, 1, 1);
-                char buffA[5];
-                mt_readText(buffA);
-                int valueA;
+                mt_goToXY(cursorX,cursorY);
+                mt_printText(" Accumulator:> ");
+                rk_mytermregime(0, 0, 1, 1, 1);
+                char buffAf[2];
+                mt_readText(buffAf);
+                int sign = 1;
+                if (buffAf[0] == '-')
+                {
+                	rk_mytermregime(0, 0, 4, 1, 1);
+                	sign = -1;
+                }
+                else
+                {
+                	rk_mytermregime(0, 0, 3, 1, 1);
+                }
+        		char buffAs [5];
+        		mt_readText(buffAs);
+        		char buffA[6];
+        		if (sign)
+        		{
+        			sprintf(buffA, "%s", buffAf);
+        		}
+        		sprintf(buffA,"%s%s", buffA, buffAs);
+        		int valueA;
                 sscanf(buffA,"%x",&valueA);
-                sc_accumulator = valueA;
-                alarm(1);
+                sc_accumulator = valueA * sign;
                 break;
             case KEY_f6:
-                alarm(0);
-                mt_goToXY(icX,icY);
-                mt_printText("+    ");
-                mt_goToXY(icX + 1,icY);
-                rk_mytermregime(0, 0, 4, 1, 1);
+                mt_goToXY(cursorX, cursorY);
+                mt_printText(" Instruction Counter:> ");
+                rk_mytermregime(0, 0, 2, 1, 1);
                 char buffI[5];
                 mt_readText(buffI);
                 int valueI;
@@ -127,25 +140,34 @@ int keyHandler(enum keys key)
                 if ((valueI >= 0) && (valueI < 100))
                 {
                     sc_instructionCounter = valueI;
+                    sc_regSet(FLAG_WRONG_ADDRESS,0);
                 }
                 else
                 {
-                    sc_regSet(3,1);
-                }
-                alarm(1);           
+                    sc_regSet(FLAG_WRONG_ADDRESS,1);
+                }     
                 break;
             case KEY_enter:
-                alarm(0);
-                mt_goToXY(cursorX,cursorY);
-                mt_printText("+    ");
-                mt_goToXY(cursorX + 1,cursorY);
-                rk_mytermregime(0, 0, 4, 1, 1);
-                char buffM[5];
+                mt_goToXY(cursorX, cursorY);
+                mt_printText(" Command:> ");
+                rk_mytermregime(0, 0, 2, 1, 1);
+                char buffM[3];
                 mt_readText(buffM);
+                int commandM;
+                sscanf(buffM,"%x",&commandM);
+                mt_printText(" Operand:> ");
+                rk_mytermregime(0, 0, 2, 1, 1);
+                mt_readText(buffM);
+                int operandM;
+                sscanf(buffM,"%x", &operandM);
                 int valueM;
-                sscanf(buffM,"%x",&valueM);
-                sc_memorySet(sc_instructionCounter, valueM);
-                alarm(1);
+                int protection;
+                protection = sc_commandEncode(commandM,operandM,&valueM);
+
+                if (protection == 0)
+                {
+                	sc_memorySet(sc_instructionCounter, valueM);
+                }
                 break;  
             }
         }

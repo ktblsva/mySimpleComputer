@@ -102,12 +102,12 @@ int sc_commandEncode(int command, int operand, int *value) {
       *value = code;
       return 0;
     } else {
-      printf("ERR_WRONG_VALUE\n");
+      //printf("ERR_WRONG_VALUE\n");
       sc_regSet(ERR_WRONG_VALUE, 1);
       return ERR_WRONG_VALUE;
     }
   } else {
-    printf("ERR_WRONG_COMMAND\n");
+    //printf("ERR_WRONG_COMMAND\n");
     BIT_SET(sc_reg, FLAG_WRONG_COMMAND);
     return ERR_WRONG_COMMAND;
   }
@@ -122,7 +122,7 @@ int sc_commandDecode(int value, int *command, int *operand) {
     *operand = value;
     return 0;
   } else {
-    printf("ERR_WRONG_COMMAND\n");
+   // printf("ERR_WRONG_COMMAND\n");
     sc_regSet(ERR_WRONG_COMMAND, 1);
     return ERR_WRONG_COMMAND;
   }

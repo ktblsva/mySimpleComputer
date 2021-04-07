@@ -9,6 +9,7 @@ int mg_showGUI(int x, int y)
     mg_showAccumulator((x - 1) + 10 * 5 + 9 + 4, y);
     mg_showInstructionCounter((x - 1) + 10 * 5 + 9 + 4, (y - 1) + 1 + 3);
     mg_showOperation((x - 1) + 10 * 5 + 9 + 4, (y - 1) + 1 + 3 + 3);
+    mg_showInputField(x,y + 22);
 }
 
 int mg_showKeys(int x, int y) 
@@ -102,8 +103,6 @@ int mg_showMemory(int x, int y)
             if (cell == sc_instructionCounter)
             {
                 mt_setBgColor(HighlightColor);
-                cursorX = (2 + x) + 6 * (j - 1);
-                cursorY = y + i;
             }
             cell++;
             sprintf(buff, "+%.4X", value);
@@ -215,9 +214,19 @@ int mg_showAccumulator (int x, int y)
     mt_printText("Accumulator");
 
     mt_goToXY(x + width / 2 - (5 / 2), y + 1);
-    acX = x + width / 2 - (5 / 2); acY = y + 1;
     char buff[6];
-    sprintf(buff,"+%.4X", sc_accumulator);
+
+    if (sc_accumulator < 0)
+    {
+        mt_printText("-");
+        sprintf(buff,"%.4X", sc_accumulator * -1);
+    }
+    else
+    {
+        mt_printText("+");
+        sprintf(buff,"%.4X", sc_accumulator);
+    }
+
     mt_printText(buff);
 
     return 0;
@@ -234,7 +243,6 @@ int mg_showInstructionCounter (int x, int y)
     mt_printText("Instruction Counter");
 
     mt_goToXY(x + width / 2 - (5 / 2), y + 1);
-    icX = x + width / 2 - (5 / 2); icY = y + 1;
     char buff[6];
     sprintf(buff,"+%.4X", sc_instructionCounter);
     mt_printText(buff);
@@ -249,5 +257,33 @@ int mg_showOperation(int x, int y)
     bc_panel(x,y,width,height);
 
     mt_goToXY(x + width / 2 - 9 / 2, y);
-    mt_printText("Operation");   
+    mt_printText("Operation");
+
+    int value;
+    sc_memoryGet(sc_instructionCounter,&value);
+    int command;
+    int operand;
+    sc_commandDecode(value,&command,&operand);
+    mt_goToXY(x + (width / 2) - 4, y + 1);
+    char buff[9];
+    sprintf(buff,"+%.2X : %.2X",command,operand);
+    mt_printText(buff);   
+}
+
+int mg_showInputField(int x, int y)
+{
+    int width = 10 * 5 + 9 + 2 + 23;
+    int height = 3;
+    bc_panel(x,y,width,height);
+    mt_goToXY(x+1, y+1);
+
+    for (int i = 0; i < width - 1; i++)
+    {
+        mt_printText(" ");
+    }
+
+    mt_goToXY(x + 1,y + 1);
+    mt_printText("Input\\Output:>");  
+    cursorX = x + 1 + strlen("Input\\Output:>"); 
+    cursorY = y + 1;
 }
