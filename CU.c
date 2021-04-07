@@ -18,8 +18,8 @@ int WRITE(int operand)
 	mt_goToXY(cursorX, cursorY);
 	int value;
 	sc_memoryGet(operand, &value);
-	char tmp[4];
-	sprintf(tmp, "Value: %d", value);
+	char tmp[14];
+	sprintf(tmp, " Value:> %X", value);
 	mt_printText(tmp);
 	return 0;
 }

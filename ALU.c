@@ -27,7 +27,7 @@ int ALU(int command, int operand)
 				//sc_accumulator &= tmp;
 				;
 				int a = sc_accumulator;
-				int b = operand;
+				int b = tmp;
 				for(int i = 0; i < 8; i++)
 				{
 					if((a & (1 << i)) & (b & (1 << i)))
