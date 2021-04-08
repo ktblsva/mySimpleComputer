@@ -9,18 +9,20 @@ int READ(int operand)
 	mt_readText(buffer);
 	int value = atoi(buffer);
 	sc_memorySet(operand, value);
+	char outputR[255];
+	sprintf(outputR,"Input value(dec):> %s",buffer);
+	sc_addOutput(outputR);
 	mg_showGUI(1,1);
 	return 0;
 }
 
 int WRITE(int operand)
 {
-	mt_goToXY(cursorX, cursorY);
 	int value;
 	sc_memoryGet(operand, &value);
 	char tmp[14];
-	sprintf(tmp, " Value:> %X", value);
-	mt_printText(tmp);
+	sprintf(tmp, "Value:> %.4X", value);
+	sc_addOutput(tmp);
 	return 0;
 }
 

@@ -115,11 +115,13 @@ int sc_commandEncode(int command, int operand, int *value) {
       return 0;
     } else {
       //printf("ERR_WRONG_VALUE\n");
+      sc_addOutput("ERR_WRONG_VALUE");
       sc_regSet(ERR_WRONG_VALUE, 1);
       return ERR_WRONG_VALUE;
     }
   } else {
     //printf("ERR_WRONG_COMMAND\n");
+    sc_addOutput("ERR_WRONG_COMMAND");
     sc_regSet(FLAG_WRONG_COMMAND,1);
     return ERR_WRONG_COMMAND;
   }
@@ -135,7 +137,28 @@ int sc_commandDecode(int value, int *command, int *operand) {
     return 0;
   } else {
    // printf("ERR_WRONG_COMMAND\n");
+    sc_addOutput("ERR_WRONG_COMMAND");
     sc_regSet(ERR_WRONG_COMMAND, 1);
     return ERR_WRONG_COMMAND;
   }
+}
+
+char** sc_outputs = NULL;
+
+int sc_addOutput(char* output)
+{
+
+  if (sc_outputs == NULL)
+  {
+    sc_outputs = (char**)malloc(sizeof(char*) * 3);
+    sc_outputs[3] = (char*)malloc(sizeof(char) * 255);
+    sc_outputs[2] = (char*)malloc(sizeof(char) * 255);
+    sc_outputs[1] = (char*)malloc(sizeof(char)* 255);
+  }
+
+  sc_outputs[3] = sc_outputs[2];
+  sc_outputs[2] = sc_outputs[1];
+  sc_outputs[1] = (char*)malloc(sizeof(char)* 255);
+  sprintf(sc_outputs[1],"%s",output);
+  //sc_outputs[1] = output;
 }

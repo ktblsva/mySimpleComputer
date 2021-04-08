@@ -127,6 +127,10 @@ int keyHandler(enum keys key)
         		int valueA;
                 sscanf(buffA,"%x",&valueA);
                 sc_accumulator = valueA;
+
+                char outputA[255];
+                sprintf(outputA,"Accumulator:> %s", buffA);
+                sc_addOutput(outputA);
                 break;
             case KEY_f6:
                 mt_goToXY(cursorX, cursorY);
@@ -141,6 +145,9 @@ int keyHandler(enum keys key)
                 {
                     sc_instructionCounter = valueI;
                     sc_regSet(FLAG_WRONG_ADDRESS,0);
+                    char outputI[255];
+                    sprintf(outputI, "Instruction Counter:> %s", buffI);
+                    sc_addOutput(outputI);
                 }
                 else
                 {
@@ -167,6 +174,9 @@ int keyHandler(enum keys key)
                 if (protection == 0)
                 {
                 	sc_memorySet(sc_instructionCounter, valueM);
+                	char outputM[255];
+                	sprintf(outputM,"Command:> %X Operand:> %X",commandM, operandM);
+                	sc_addOutput(outputM);
                 }
                 break;  
             }

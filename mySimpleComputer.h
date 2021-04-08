@@ -26,6 +26,7 @@ int sc_accumulator;
 int sc_memory[MEMORYSIZE];
 int sc_reg;
 extern int sc_commands[];
+char **sc_outputs;
 
 int sc_memoryInit();
 int sc_memorySet(int address, int value);
@@ -37,4 +38,5 @@ int sc_regSet(int reg, int value);
 int sc_regGet(int reg, int* value);
 int sc_commandEncode(int command, int operand, int* value);
 int sc_commandDecode(int value, int* command, int* operand);
+int sc_addOutput(char* output);
 #endif // MY_SIMPLE_COMPUTER_H

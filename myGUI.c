@@ -9,7 +9,8 @@ int mg_showGUI(int x, int y)
     mg_showAccumulator((x - 1) + 10 * 5 + 9 + 4, y);
     mg_showInstructionCounter((x - 1) + 10 * 5 + 9 + 4, (y - 1) + 1 + 3);
     mg_showOperation((x - 1) + 10 * 5 + 9 + 4, (y - 1) + 1 + 3 + 3);
-    mg_showInputField(x,y + 22);
+    mg_showOutputField(x,y+22);
+    mg_showInputField(x,y + 27);
 }
 
 int mg_showKeys(int x, int y) 
@@ -270,6 +271,42 @@ int mg_showOperation(int x, int y)
     mt_printText(buff);   
 }
 
+int mg_showOutputField(int x, int y)
+{
+    int width = 10 * 5 + 9 + 2 + 23;
+    int height = 5;
+    bc_panel(x,y,width,height);
+    mt_goToXY(x + 1, y);
+    mt_printText("Output:");
+
+
+    if (sc_outputs != NULL)
+    {
+        mt_goToXY(x + 1, y + 1);
+        for (int i = x; i < width - 2; i++)
+        {
+            mt_printText(" ");
+        }
+        mt_goToXY(x + 1, y + 1);
+        mt_printText(sc_outputs[3]);
+        mt_goToXY(x + 1, y + 2);
+        for (int i = x; i < width - 2; i++)
+        {
+            mt_printText(" ");
+        }
+        mt_goToXY(x + 1, y + 2);
+        mt_printText(sc_outputs[2]);
+        mt_goToXY(x + 1, y + 3);
+        for (int i = x; i < width - 2; i++)
+        {
+            mt_printText(" ");
+        }
+        mt_goToXY(x + 1, y + 3);
+        mt_printText(sc_outputs[1]);
+    }
+    
+}
+
 int mg_showInputField(int x, int y)
 {
     int width = 10 * 5 + 9 + 2 + 23;
@@ -283,7 +320,8 @@ int mg_showInputField(int x, int y)
     }
 
     mt_goToXY(x + 1,y + 1);
-    mt_printText("Input\\Output:>");  
-    cursorX = x + 1 + strlen("Input\\Output:>"); 
+    mt_printText("Input:>");  
+    cursorX = x + 1 + strlen("Input:>"); 
     cursorY = y + 1;
 }
+
