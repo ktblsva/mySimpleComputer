@@ -47,7 +47,7 @@ int keyHandler(enum keys key)
         switch (key) 
         {
             case KEY_l:
-                sc_memoryLoad("memory");
+                sc_memoryLoad("output.mem");
                 break;
             case KEY_s:
                 sc_memorySave("memory");
