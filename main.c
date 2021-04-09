@@ -47,10 +47,28 @@ int keyHandler(enum keys key)
         switch (key) 
         {
             case KEY_l:
-                sc_memoryLoad("output.mem");
+            	mt_goToXY(cursorX, cursorY);
+            	mt_printText(" Filename to load:> ");
+            	rk_mytermregime(1,0,0,1,1);
+            	char buffL[255];
+            	mt_readText(buffL, sizeof(buffL));
+            	buffL[strlen(buffL) - 1] = '\0';
+                sc_memoryLoad(buffL);
+                char outputL[255];
+                sprintf(outputL, "Filename to load:> %s", buffL);
+                sc_addOutput(outputL);
                 break;
             case KEY_s:
-                sc_memorySave("memory");
+            	mt_goToXY(cursorX, cursorY);
+            	mt_printText(" Filename to save:> ");
+            	char buffS[255];
+            	rk_mytermregime(1,0,0,1,1);
+            	mt_readText(buffS, sizeof(buffS));
+            	buffS[strlen(buffS) - 1] = '\0';
+                sc_memorySave(buffS);
+                char outputS[255];
+                sprintf(outputS, "Filename to save:> %s", buffS);
+                sc_addOutput(outputS);
                 break;
             case KEY_up:
 
@@ -105,7 +123,7 @@ int keyHandler(enum keys key)
                 mt_printText(" Accumulator:> ");
                 rk_mytermregime(0, 0, 1, 1, 1);
                 char buffAf[2];
-                mt_readText(buffAf);
+                mt_readText(buffAf, sizeof(buffAf));
                 int sign = 1;
                 if (buffAf[0] == '-')
                 {
@@ -117,7 +135,7 @@ int keyHandler(enum keys key)
                 	rk_mytermregime(0, 0, 3, 1, 1);
                 }
         		char buffAs [5];
-        		mt_readText(buffAs);
+        		mt_readText(buffAs, sizeof(buffAs));
         		char buffA[6];
         		if (sign)
         		{
@@ -137,7 +155,7 @@ int keyHandler(enum keys key)
                 mt_printText(" Instruction Counter:> ");
                 rk_mytermregime(0, 0, 2, 1, 1);
                 char buffI[5];
-                mt_readText(buffI);
+                mt_readText(buffI, sizeof(buffI));
                 int valueI;
                 sscanf(buffI,"%x",&valueI);
                 
@@ -159,12 +177,12 @@ int keyHandler(enum keys key)
                 mt_printText(" Command:> ");
                 rk_mytermregime(0, 0, 2, 1, 1);
                 char buffM[3];
-                mt_readText(buffM);
+                mt_readText(buffM, sizeof(buffM));
                 int commandM;
                 sscanf(buffM,"%x",&commandM);
                 mt_printText(" Operand:> ");
                 rk_mytermregime(0, 0, 2, 1, 1);
-                mt_readText(buffM);
+                mt_readText(buffM, sizeof(buffM));
                 int operandM;
                 sscanf(buffM,"%x", &operandM);
                 int valueM;

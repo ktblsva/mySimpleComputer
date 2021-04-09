@@ -1,11 +1,11 @@
 #include "myTerm.h"
 
-int mt_readText(char *text) {
+int mt_readText(char *text,int size) {
   int terminal = open(TERM, O_RDWR);
   if (terminal == -1) {
     return ERR_TERM;
   }
-  int numRead = read(terminal, text, sizeof(text));
+  int numRead = read(terminal, text, size);
   text[numRead] = '\0';
   return 0;
 }

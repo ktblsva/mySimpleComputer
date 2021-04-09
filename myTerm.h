@@ -25,7 +25,7 @@ enum Colors {
   Default
 };
 
-int mt_readText(char *text);
+int mt_readText(char *text, int size);
 int mt_printText(char *text);
 int mt_clrscr(void);
 int mt_goToXY(int x, int y);

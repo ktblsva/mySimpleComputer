@@ -61,7 +61,7 @@ void translation(const char* filename)
 			break;
 		}
 		//!!!
-		operand = atoi(oper);
+		sscanf(oper,"%x",&operand);
 		if(operand == NULL && (strcmp(oper, "0") != 0 && strcmp(oper, "00") != 0 && strcmp(oper, "000") != 0 && strcmp(oper, "0000") != 0))
 		{
 			fprintf(stderr, "Line %d: wrong operand.\n", ++i);
@@ -126,7 +126,7 @@ void translation(const char* filename)
 		}
 		else if(command[0] == '=')
 		{
-			sc_memorySet(address, atoi(oper));
+			sc_memorySet(address, operand);
 			continue;
 		}
 		else
@@ -143,6 +143,8 @@ void translation(const char* filename)
 		}
 		sc_memorySet(address, value);
 	}
+	//sc_regSet(1,1);
+	//sc_regSet(FLAG_IGNOR_PULS,1);
 	sc_memorySave(strdup(filename));
 }
 

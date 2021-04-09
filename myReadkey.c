@@ -115,7 +115,7 @@ int rk_mytermsave()
 	return 0;
 }
 
-int rk_mytermrestore(void)
+int rk_mytermrestore()
 {
 	int terminal = open(TERM, O_RDWR);
   	if (terminal == -1) 
@@ -174,34 +174,35 @@ int rk_mytermregime(int regime, int vtime, int vmin, int echo, int sigint)
     	//количество символов в очереди, чтобы read завершился
         termOrig.c_cc[VTIME] = vtime;
         //сколько времени ждать появления символа
-        termOrig.c_cc[VMIN] = vmin;
-        //символы будут отражаться по мере набора
-        if (echo == 1)
-        {
-        	termOrig.c_lflag |= ECHO;
-        }
-        else if(!echo)
-        {
-        	termOrig.c_lflag &= ~ECHO;
-        }
-        else
-        {
-        	return -1;
-        }
-        //обработка клавиш прерывания
-        if (sigint)
-        {
-        	termOrig.c_lflag |= ISIG;
-        }
-        else if (!sigint)
-        {
-			termOrig.c_lflag &= ~ISIG;
-        }
-        else
-        {
-        	return -1;
-        }
+        termOrig.c_cc[VMIN] = vmin;  
     }
+    //символы будут отражаться по мере набора
+    if (echo == 1)
+    {
+    	termOrig.c_lflag |= ECHO;
+    }
+    else if(!echo)
+    {
+    	termOrig.c_lflag &= ~ECHO;
+   	}
+    else
+    {
+       	return -1;
+    }
+    //обработка клавиш прерывания
+    if (sigint)
+    {
+       	termOrig.c_lflag |= ISIG;
+    }
+    else if (!sigint)
+    {
+		termOrig.c_lflag &= ~ISIG;
+    }
+    else
+    {
+       	return -1;
+    }
+    
     if (tcsetattr(terminal, TCSANOW, &termOrig) != 0)
     {
 		return -1;

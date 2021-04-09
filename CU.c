@@ -6,7 +6,7 @@ int READ(int operand)
 	mt_printText(" Input value(dec):> ");
 	rk_mytermregime(0, 0, 4, 1, 1);
 	char buffer[5];
-	mt_readText(buffer);
+	mt_readText(buffer, sizeof(buffer));
 	int value = atoi(buffer);
 	sc_memorySet(operand, value);
 	char outputR[255];

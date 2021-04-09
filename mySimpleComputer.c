@@ -14,7 +14,7 @@ int sc_memorySet(int address, int value) {
     return 0;
 
   } else {
-    printf("ERR_WRONG_ADDRESS\n");
+    sc_addOutput("ERR_WRONG_ADDRESS\n");
     BIT_SET(sc_reg, FLAG_WRONG_ADDRESS);
     return ERR_WRONG_ADDRESS;
   }
@@ -26,7 +26,7 @@ int sc_memoryGet(int address, int *value) {
     return 0;
 
   } else {
-    printf("ERR_WRONG_ADDRESS\n");
+    sc_addOutput("ERR_WRONG_ADDRESS\n");
     BIT_SET(sc_reg, FLAG_WRONG_ADDRESS);
     return ERR_WRONG_ADDRESS;
   }
@@ -35,11 +35,11 @@ int sc_memoryGet(int address, int *value) {
 int sc_memorySave(char *filename) {
   FILE *ptrFile = fopen(filename, "wb");
   if (ptrFile != NULL) {
-    fwrite(sc_memory, sizeof(int), sizeof(sc_memory), ptrFile);
+    fwrite(sc_memory, sizeof(int), sizeof(sc_memory) / sizeof(int), ptrFile);
     fclose(ptrFile);
     return 0;
   } else {
-    printf("ERROR: Can't open the file\n");
+    sc_addOutput("ERROR: Can't open the file\n");
     return 1;
   }
 }
@@ -47,11 +47,11 @@ int sc_memorySave(char *filename) {
 int sc_memoryLoad(char *filename) {
   FILE *ptrFile = fopen(filename, "rb");
   if (ptrFile != NULL) {
-    fread(sc_memory, sizeof(int), sizeof(sc_memory), ptrFile);
+    fread(sc_memory, sizeof(int), sizeof(sc_memory) / sizeof(int), ptrFile);
     fclose(ptrFile);
     return 0;
   } else {
-    printf("ERROR: Can't open the file \n");
+    sc_addOutput("ERROR: Can't open the file \n");
     return 1;
   }
 }
@@ -68,7 +68,7 @@ int sc_regSet(int reg, int value) {
         BIT_SET(sc_reg, reg);
         return 0;
       } else {
-        printf("ERR_WRONG_VALUE\n");
+        sc_addOutput("ERR_WRONG_VALUE\n");
         BIT_SET(sc_reg, FLAG_OVERFLOW);
         return ERR_WRONG_VALUE;
       }
@@ -78,7 +78,7 @@ int sc_regSet(int reg, int value) {
     }
 
   } else {
-    printf("ERR_WRONG_FLAG\n");
+    sc_addOutput("ERR_WRONG_FLAG\n");
     return ERR_WRONG_FLAG;
   }
 }
