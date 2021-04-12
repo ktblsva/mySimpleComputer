@@ -106,7 +106,14 @@ int mg_showMemory(int x, int y)
                 mt_setBgColor(HighlightColor);
             }
             cell++;
-            sprintf(buff, "+%.4X", value);
+            if (value >= 0)
+            {
+                sprintf(buff, "+%.4X", value);
+            }
+            else
+            {
+                sprintf(buff, "-%.4X", value * -1);
+            }
             mt_printText(buff);
             if (cell - 1 == sc_instructionCounter)
             {
@@ -134,7 +141,15 @@ int mg_showBigChars (int x, int y)
     int value;
     value = 3;
     sc_memoryGet(sc_instructionCounter, &value);
-    sprintf(buff,"+%.4X", value);
+
+    if (value >= 0)
+    {
+        sprintf(buff,"+%.4X", value);
+    }
+    else
+    {
+        sprintf(buff,"-%.4X", value * -1);
+    }
 
     for (int i = 0; i < strlen(buff); i++)
     {
@@ -144,6 +159,9 @@ int mg_showBigChars (int x, int y)
         {
             case '+':
                 bc_arrayToBig(big,bc_char_plus);
+                break;
+            case '-':
+                bc_arrayToBig(big,bc_char_minus);
                 break;
             case '0':
                 bc_arrayToBig(big,bc_char_0);
@@ -260,15 +278,31 @@ int mg_showOperation(int x, int y)
     mt_goToXY(x + width / 2 - 9 / 2, y);
     mt_printText("Operation");
 
+    mt_goToXY(x + 1, y + 1);
+    for (int i = x + 1; i < x + width; i++)
+    {
+        mt_printText(" ");
+    }
+
     int value;
     sc_memoryGet(sc_instructionCounter,&value);
-    int command;
-    int operand;
-    sc_commandDecode(value,&command,&operand);
-    mt_goToXY(x + (width / 2) - 4, y + 1);
-    char buff[9];
-    sprintf(buff,"+%.2X : %.2X",command,operand);
-    mt_printText(buff);   
+    if (value >= 0)
+    {
+        int command;
+        int operand;
+        sc_commandDecode(value,&command,&operand);
+        mt_goToXY(x + (width / 2) - 4, y + 1);
+        char buff[9];
+        sprintf(buff,"+%.2X : %.2X",command,operand);
+        mt_printText(buff); 
+    }
+    else
+    {
+        mt_goToXY(x + (width / 2) - 7, y + 1);
+        char* buff = "Not an operation";
+        mt_printText(buff); 
+    }   
+  
 }
 
 int mg_showOutputField(int x, int y)

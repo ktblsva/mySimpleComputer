@@ -54,6 +54,14 @@ void translation(const char* filename)
 		ptr = strtok(NULL, " +");
 		oper = ptr;
 		address = atoi(addr);
+
+		ptr = strtok(NULL," ");
+
+		if (ptr != NULL && ptr[0] != ';')
+		{
+			fprintf(stderr, "Line %d: unexpected symbols.\n", ++i);
+			break;
+		}
 		
 		if(!atoi(addr) && strcmp(addr, "00") != 0)
 		{
@@ -61,7 +69,10 @@ void translation(const char* filename)
 			break;
 		}
 		//!!!
-		sscanf(oper,"%x",&operand);
+		operand = atoi(oper);
+		char buffer[255];
+		sprintf(buffer,"%x",operand);
+		sscanf(buffer,"%x",&operand);
 		if(operand == NULL && (strcmp(oper, "0") != 0 && strcmp(oper, "00") != 0 && strcmp(oper, "000") != 0 && strcmp(oper, "0000") != 0))
 		{
 			fprintf(stderr, "Line %d: wrong operand.\n", ++i);
@@ -126,6 +137,7 @@ void translation(const char* filename)
 		}
 		else if(command[0] == '=')
 		{
+			sscanf(oper,"%x",&operand);
 			sc_memorySet(address, operand);
 			continue;
 		}

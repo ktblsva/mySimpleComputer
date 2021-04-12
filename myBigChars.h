@@ -21,6 +21,7 @@
 #define HL "─" // horis line
 
 extern char bc_char_plus[];
+extern char bc_char_minus[];
 extern char bc_char_0[];
 extern char bc_char_1[];
 extern char bc_char_2[];
