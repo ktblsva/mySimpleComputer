@@ -18,6 +18,13 @@ struct variable
 struct variable Variables[52];
 char lastConstantName = 'a';
 
+struct command
+{
+	char* Number;
+	char* Command;
+	char* Address;
+};
+
 FILE *input = NULL;
 FILE *output = NULL;
 
@@ -94,10 +101,10 @@ void translation(const char* filename)
 	}
 	revind(input);
 
-	char** program = (char**)malloc(sizeof(char*) * instructionCounter);
+	struct command** program = (struct command**)malloc(sizeof(struct command*) * instructionCounter);
 	for (int i = 0 ;i < instructionCounter; i++)
 	{
-		program[i] = (char)malloc(sizeof(char) * 255);
+		program[i] = (struct command)malloc(sizeof(struct command) * 255);
 		if(!fgets(program[i], 255, input))
 		{
 			if(feof(input))
@@ -118,7 +125,7 @@ void translation(const char* filename)
 	{
 		char* lin;
 
-		char* ptr = strtok(program[i]," ");
+		char* ptr = strtok(program[i].Command," ");
 		lin = ptr;
 
 		int line = atoi(line);
@@ -130,19 +137,14 @@ void translation(const char* filename)
 
 		if (i - 1 >= 0)
 		{
-			char* last;
-			char* ptr2 = strtok(program[i - 1]," ");
-			if (line <= atoi(last))
+			if (line <= program[i - 1].Number)
 			{
 				fprintf(stderr, "Line %d: Wrong line number\n", i++);
-				free(last);
-				free(ptr2);
 				break;
 			}
-
-			free(last);
-			free(ptr2);
 		}
+		
+		program[i].Number = line;
 
 		char* command;
 		ptr = strtok(NULL," ");
