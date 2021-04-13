@@ -40,7 +40,6 @@ int getVariableAddress(char* name)
 			Variables[i].Name = name;
 			Variables[i].Address = 99 - i;
 			return Variables[i].Address;
-			break;
 		}
 	}
 }
@@ -55,7 +54,7 @@ char* intToConstant(int value)
 			lastConstantName++;
 			Variables[i].Address = 99 - i;
 			Variables[i].Value = value;
-			fprintf(output, "%d STORE %d\n",Variables[i].Address, Variables[i].Value);
+			fprintf(output, "%d = %x\n",Variables[i].Address, abs(ariables[i].Value));
 			return Variables[i].Name;
 		}
 
