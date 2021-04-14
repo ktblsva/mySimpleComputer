@@ -2,11 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Node
-{
-	char data;
-	Node* next;
-};
 
 void stack_push(char data, Node** top)
 {
@@ -192,69 +187,5 @@ char preCalcProcessing(char* expr)
     }
     expr = exp;
     return val;
-}
-
-void parsRPN(char* rpn, char* var)
-{
-    int i = 0;
-    int current_symb = 0;
-    int depth = 0;
-    int operand1, operand2;
-    Node* root = nullptr;
-    while (rpn[i] != '\0' && rpn[i] != '\n')
-    {
-        char x = rpn[i];
-        if ((x >= 'a' && x <= 'z') || x >= 'A' && x <= 'Z')
-        {
-            fprintf(output, "%d LOAD %d\n", assemblerCommandCounter, getVariableAddress(x));
-            fprintf(output, "%d STORE %d\n", assemblerCommandCounter, assemblerCommandCounter);
-            assemblerCommandCounter++;
-            depth++;
-        }
-        if (x == '+' || x == '-' || x == '*' || x == '/')
-        {
-            if (depth < 2)
-            {
-                fprintf(stderr, "Uncorrect LET statement, check your expression.\n");
-                exit(EXIT_FAILURE);
-            }
-            else
-            {
-              operand1 = assemblerCommandCounter - 1;
-              operand2 = assemblerCommandCounter - 2;
-              fprintf(output, "%d LOAD %d\n", assemblerCommandCounter, operand1); //закидываем самый правый операнд в акк
-              assemblerCommandCounter++; 
-              switch (x)
-              {
-              case '+':
-                    fprintf(output, "%d ADD %d\n", assemblerCommandCounter, operand2);
-                    assemblerCommandCounter++;
-                    break;
-              case '-': //SUB
-                    fprintf(output, "%d SUB %d\n", assemblerCommandCounter, operand2);
-                    assemblerCommandCounter++;
-                    break;
-              case '/': //DIVIDE
-                    fprintf(output, "%d DIVIDE %d\n", assemblerCommandCounter, operand2);
-                    assemblerCommandCounter++;
-                    break;
-              case '*': //MUL
-                    fprintf(output, "%d MUL %d\n", assemblerCommandCounter, operand2);
-                    assemblerCommandCounter++;
-                    break;
-              }
-              fprintf(output, "%d STORE %d\n", assemblerCommandCounter, operand2);
-              assemblerCommandCounter++;  
-              depth--;
-            }
-        }
-        i++;
-    }
-    if (depth != 1)//??
-    {
-      fprintf(stderr, "Uncorrect LET statement, check your expression.\n");
-      exit(EXIT_FAILURE);
-    }
-    fprintf(output, "%d STORE %d\n", assemblerCommandCounter, getVariableAddress(var));
 }
 
