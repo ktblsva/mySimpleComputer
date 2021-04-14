@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-
+#include "rpnTranslator.h"
 void stack_push(char data, Node** top)
 {
     Node* tmp = new Node();
