@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "mySimpleComputer.h"
+#include "rpn_translator.c"
 
 #define ERR_EXPECTED_ADDRESS_OF_MEMORY_CELL -1
 #define ERR_WRONG_COMMAND -2
@@ -184,7 +185,16 @@ void PRINT(char *)
 
 void GOTO();
 void IF();
-void LET();
+
+void LET(char* arguments)
+{
+	char fin[255];
+	char var;
+	var = preCalcProcessing(&arguments);
+	translateToRPN(arguments, fin);
+	parsRPN(fin, var);
+}
+
 void END()
 {
 	fprintf(output, "%d HALT 00\n", assemblerCommandCounter);
@@ -210,7 +220,7 @@ void function(char* command, char* arguments);
 			IF();
 			break;
 		case("LET"):
-			LET();
+			LET(arguments);
 			break;
 		case("END"):
 			END();

@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -191,10 +190,11 @@ char preCalcProcessing(char* expr)
         }
         i++;
     }
+    expr = exp;
     return val;
 }
 
-void parsRPN(char* rpn, int variab, char* var)
+void parsRPN(char* rpn, char* var)
 {
     int i = 0;
     int current_symb = 0;
