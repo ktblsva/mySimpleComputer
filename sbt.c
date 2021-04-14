@@ -11,7 +11,7 @@
 
 struct variable
 {
-	char Name[2];
+	char Name;
 	int Address;
 	int Value;
 };
@@ -21,9 +21,9 @@ char lastConstantName = 'a';
 
 struct command
 {
-	char* Number;
+	int Number;
 	char* Command;
-	char* Address;
+	int Address;
 };
 
 FILE *input = NULL;
@@ -33,8 +33,12 @@ const char commandID[][7] =
 {"REM", "INPUT", "PRINT","GOTO","IF","LET","END"};
 int basicCommandCouner = 0;
 int assemblerCommandCounter = 0;
+struct command* program = (struct command*)malloc(sizeof(struct command) * instructionCounter);
 
-int getVariableAddress(char* name)
+int gotoCounter = -1;
+struct command *gotoRecords = (struct command*)malloc(sizeof(command) * gotoCounter + 1);
+
+int getVariableAddress(char name)
 {
 	for (int i = 0; i < 52; i++)
 	{
@@ -52,7 +56,7 @@ int getVariableAddress(char* name)
 	}
 }
 
-char* intToConstant(int value)
+char intToConstant(int value)
 {
 	for (int i = 0; i < 52; i++)
 	{
@@ -76,7 +80,7 @@ char* intToConstant(int value)
 	}
 }
 
-void load_file(const char* filename)
+void loadFile(const char* filename)
 {
 	if((input = fopen(filename, "r")) == NULL)
 	{
@@ -102,11 +106,9 @@ void translation(const char* filename)
 	}
 	revind(input);
 
-	struct command** program = (struct command**)malloc(sizeof(struct command*) * instructionCounter);
 	for (int i = 0 ;i < instructionCounter; i++)
 	{
-		program[i] = (struct command)malloc(sizeof(struct command) * 255);
-		if(!fgets(program[i], 255, input))
+		if(!fgets(program[i].Command, 255, input))
 		{
 			if(feof(input))
 			{
@@ -129,7 +131,7 @@ void translation(const char* filename)
 		char* ptr = strtok(program[i].Command," ");
 		lin = ptr;
 
-		int line = atoi(line);
+		int line = atoi(lin);
 		if ((line == NULL) && (strcmp(lin,"0") != 0) && (strcmp(lin,"00") != 0))
 		{
 			fprintf(stderr, "Line %d: expected line number.\n", i++);
@@ -153,9 +155,29 @@ void translation(const char* filename)
 		char* arguments;
 		ptr = strtok(NULL, "");
 		arguments = ptr;
+		program[i].Address = assemblerCommandCounter;
 
-		function(command, arguments);
+		if (command != "GOTO")
+		{
+			function(command, arguments);
+		}
+		else
+		{
+			gotoCounter++;
+			gotoRecords = realloc(gotoRecords, sizeof(struct command) * gotoCounter + 1);
+			gotoRecords[gotoCounter] = program[i];
+		}
 
+	}
+
+	for (int i = 0; i <= gotoCounter; i++)
+	{
+		int address - gotoRecords[i].Address;
+		char* ptr - strtok(gotoRecords[i].Command,"");
+		ptr = strtok(NULL," ");
+		ptr = strtok(NULL,"");
+		int operand = atoi(ptr);
+		GOTO(address,operand);
 	}
 }
 
@@ -171,7 +193,7 @@ void INPUT(char* arguments)
 	assemblerCommandCounter++;
 }
 
-void PRINT(char *)
+void PRINT(char *arguments)
 {
 	if (!((strlen(arguments) == 1) && (arguments[0] >= 'A') && (arguments[0] <= 'Z')))
 	{
@@ -245,7 +267,16 @@ void parsRPN(char* rpn, char* var)
     fprintf(output, "%d STORE %d\n", assemblerCommandCounter, getVariableAddress(var));
 }
 
-void GOTO();
+void GOTO(int address,int operand)
+{
+	for (int i = 0; i < basicCommandCouner; i++)
+	{
+		if (program[i].Number == operand)
+		{
+			fprintf(output, "%d JUMP %d\n",address, program[i].address);
+		}
+	}
+}
 void IF();
 
 void LET(char* arguments)
@@ -273,10 +304,7 @@ void function(char* command, char* arguments);
 			INPUT(arguments);
 			break;
 		case("PRINT"):
-			PRINT();
-			break;
-		case("GOTO")
-			GOTO();
+			PRINT(arguments);
 			break;
 		case("IF"):
 			IF();
@@ -303,7 +331,7 @@ int main(int argc, const char** argv)
 		exit(EXIT_FAILURE);
 	}
 	sc_memoryInit();
-	load_file(argv[1]);
+	loadFile(argv[1]);
 	translation(argv[2]);
 	return 0;
 }
