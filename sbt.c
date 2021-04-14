@@ -169,6 +169,7 @@ void INPUT(char* arguments)
 	fprintf(output, "%d READ %d\n", assemblerCommandCounter, getVariableAddres(arguments));
 	assemblerCommandCounter++;
 }
+
 void PRINT(char *)
 {
 	if (!((strlen(arguments) == 1) && (arguments[0] >= 'A') && (arguments[0] <= 'Z')))
@@ -180,6 +181,7 @@ void PRINT(char *)
 	fprintf(output, "%d WRITE %d\n", assemblerCommandCounter, getVariableAddres(arguments));
 	assemblerCommandCounter++;
 }
+
 void GOTO();
 void IF();
 void LET();
