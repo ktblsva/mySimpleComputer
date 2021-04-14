@@ -1,6 +1,8 @@
 #ifndef RPN_TRANSLATOR_H
 #define RPN_TRANSLATOR_H
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 struct Node
 {
 	char data;
