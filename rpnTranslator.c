@@ -1,7 +1,9 @@
 #include "rpnTranslator.h"
+
+
 void stack_push(char data, Node** top)
 {
-    Node* tmp = new Node();
+    Node* tmp = (Node*)malloc(sizeof(Node));
     tmp->data = data;
     tmp->next = *top;
     *top = tmp;
@@ -36,14 +38,14 @@ char stack_pop(Node** top)
         tmp = *top;
         *top = tmp->next;
         d = tmp->data;
-        delete tmp;
+        free(tmp);
         return d;
     }
 }
 
 char stack_top(Node* top)
 {
-    if (top != nullptr)
+    if (top != NULL)
     {
         return top->data;
     }
@@ -68,7 +70,7 @@ int checkPriority(char sign)
 char* translateToRPN(char* inf, char rpn[])
 {
     //char rpn[255] = "\0";
-    Node* root = nullptr;
+    Node* root = NULL;
     int i = 0;
     int j = 0;
     while (inf[i] != '\0' && inf[i] != '\n')
@@ -99,7 +101,7 @@ char* translateToRPN(char* inf, char rpn[])
        }
        else if (x == '+' || x == '-' || x == '*' || x == '/')
        {
-           while (root != nullptr && checkPriority(root->data) >= checkPriority(x))
+           while (root != NULL && checkPriority(root->data) >= checkPriority(x))
            {
                char c = stack_pop(&root);
                if (c != 0)
@@ -113,12 +115,12 @@ char* translateToRPN(char* inf, char rpn[])
        else if (x != ' ')
        {
            //free(rpn);
-           fprintf("Wrong expression!\n");
+           fprintf(stderr,"Wrong expression!\n");
            exit(EXIT_FAILURE);
        }
        i++;
     }
-    while (root != nullptr)
+    while (root != NULL)
     {
         char c = stack_pop(&root);
         if (c != 0)
@@ -131,7 +133,7 @@ char* translateToRPN(char* inf, char rpn[])
     {
         if (rpn[k] == '(' || rpn[k] == ')')
         {
-            fprintf("Check your expression!\n");
+            fprintf(stderr,"Check your expression!\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -139,49 +141,5 @@ char* translateToRPN(char* inf, char rpn[])
     return rpn;
 }
 
-char preCalcProcessing(char* expr)
-{
-    char* ptr = strtok(expr, " =");
-    char* val = ptr;
-    if (!(*(val) >= 'A' && *(val) <= 'Z'))
-    {
-        printf("NOT CORRECT!\n");
-    }
-    ptr = strtok(NULL, " ");
-    char* eq = ptr;
-    if (*(eq)!='=')
-    {
-        printf("Wrong expression!\n");
-    }
-    ptr = strtok(NULL, "");
-    char* exp = ptr;
-    int i = 0;
-    int pos = 0;
-    int j = 0;
-    while (exp[i] != '\n' && exp[i] != '\0')
-    {
-        if (exp[i] >= '0' && exp[i] <= '9')
-        {
-            char num[256];
-            j = 0;
-            num[j] = exp[i];
-            j++;
-            pos = i;
-            exp[i] = 'a';
-            i++;
-            while (exp[i] >= '0' && exp[i] <= '9')
-            {
-                num[j] = exp[i];
-                j++;
-                exp[i] = ' ';
-                i++;
-            }
-            num[j] = '\0';
-            exp[pos] = intToConst(atoi(num));
-        }
-        i++;
-    }
-    expr = exp;
-    return val;
-}
+
 
