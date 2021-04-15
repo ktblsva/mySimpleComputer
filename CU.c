@@ -21,7 +21,14 @@ int WRITE(int operand)
 	int value;
 	sc_memoryGet(operand, &value);
 	char tmp[14];
-	sprintf(tmp, "Value:> %.4X", value);
+	if (value > 0)
+	{
+		sprintf(tmp, "Value:> %.4X", value);
+	}
+	else
+	{
+		sprintf(tmp, "Value:> -%.4X", -1 * value);
+	}
 	sc_addOutput(tmp);
 	return 0;
 }
@@ -44,6 +51,7 @@ int JUMP(int operand)
 {
 	sc_instructionCounter = operand;
 	mg_showGUI(1,1);
+	CU();
 	return 0;
 }
 
@@ -52,7 +60,8 @@ int JNEG(int operand)
 	if(sc_accumulator < 0)
 	{
 		sc_instructionCounter = operand;
-		mg_showGUI(1,1);	
+		mg_showGUI(1,1);
+		CU();
 	}
 	return 0;
 }
@@ -63,6 +72,7 @@ int JZ(int operand)
 	{
 		sc_instructionCounter = operand;
 		mg_showGUI(1,1);	
+		CU();
 	}
 	return 0;
 }
@@ -132,15 +142,15 @@ int CU()
 		}
 	}
 	int flag = 0;
-	sc_regGet(FLAG_IGNOR_PULS, &flag);
-	if((sc_instructionCounter < 99 && sc_instructionCounter >= 0) && !flag)
-	{
-		sc_instructionCounter++;
-	}
-	else if (sc_instructionCounter >= 99)
-	{
-		sc_instructionCounter = 0;
-	}
+	//sc_regGet(FLAG_IGNOR_PULS, &flag);
+	// if((sc_instructionCounter < 99 && sc_instructionCounter >= 0) && !flag)
+	// {
+	// 	sc_instructionCounter++;
+	// }
+	// else if (sc_instructionCounter >= 99)
+	// {
+	// 	sc_instructionCounter = 0;
+	// }
 	mg_showGUI(1,1);
 	return 0;
 }

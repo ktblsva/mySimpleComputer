@@ -29,7 +29,6 @@ void translation(const char* filename)
 		{
 			if(feof(input))
 			{
-				fprintf(stderr, "Line %d: end of file.\n", i++);
 				break;
 			}
 			else
@@ -73,10 +72,13 @@ void translation(const char* filename)
 		char buffer[255];
 		sprintf(buffer,"%x",operand);
 		sscanf(buffer,"%x",&operand);
-		if(operand == NULL && (strcmp(oper, "0") != 0 && strcmp(oper, "00") != 0 && strcmp(oper, "000") != 0 && strcmp(oper, "0000") != 0))
+		if((operand == NULL && (strcmp(oper, "0\n") != 0 && strcmp(oper, "00\n") != 0 && strcmp(oper, "000\n") != 0 && strcmp(oper, "0000\n") != 0)))
 		{
-			fprintf(stderr, "Line %d: wrong operand.\n", ++i);
-			break;
+			if ((strcmp(command,"=") != 0))
+			{
+				fprintf(stderr, "Line %d: wrong operand.\n", ++i);
+				exit(EXIT_FAILURE);
+			}
 		}
 
 		if(!strcmp(command, "READ"))

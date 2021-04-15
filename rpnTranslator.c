@@ -67,7 +67,7 @@ int checkPriority(char sign)
     }
 }
 
-char* translateToRPN(char* inf, char rpn[])
+char* translateToRPN(char* inf, char* rpn)
 {
     //char rpn[255] = "\0";
     Node* root = NULL;
@@ -138,6 +138,7 @@ char* translateToRPN(char* inf, char rpn[])
         }
     }
     rpn[j] = '\0';
+    printf("RPN - %s\n", rpn);
     return rpn;
 }
 

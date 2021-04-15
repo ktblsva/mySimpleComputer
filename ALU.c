@@ -37,13 +37,13 @@ int ALU(int command, int operand)
 				}
 				break; 
 	}
-	if ((sc_accumulator > 0x7FFF) || (sc_accumulator < 0)) 
-	{
-		sc_accumulator &= 0x7FFF;
-		sc_regSet(FLAG_OVERFLOW, 1);
-	}
-	else
-	{	
-		sc_regSet(FLAG_OVERFLOW, 0);
-	}
+	// if ((sc_accumulator > 0x7FFF) || (sc_accumulator < 0)) 
+	// {
+	// 	sc_accumulator &= 0x7FFF;
+	// 	sc_regSet(FLAG_OVERFLOW, 1);
+	// }
+	// else
+	// {	
+	// 	sc_regSet(FLAG_OVERFLOW, 0);
+	// }
 }

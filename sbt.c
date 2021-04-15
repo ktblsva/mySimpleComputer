@@ -4,6 +4,16 @@
 //#include "mySimpleComputer.h"
 #include "rpnTranslator.h"
 
+void INPUT(char* arguments);
+void PRINT(char* arguments);
+void IF(char* arguments);
+void GOTO(int address,int operand);
+void function(char* command, char* arguments);
+void parsRPN(char* rpn, char* var);
+void LET(char* arguments);
+void END();
+
+
 #define ERR_EXPECTED_ADDRESS_OF_MEMORY_CELL -1
 #define ERR_WRONG_COMMAND -2
 #define ERR_WRONG_OPERAND -3
@@ -42,6 +52,7 @@ int getVariableAddress(char name)
 {
 	for (int i = 0; i < 52; i++)
 	{
+		printf("VARIABLES : %c %c\n",name, Variables[i].Name);
 		if (Variables[i].Name == name)
 		{
 			return Variables[i].Address;
@@ -62,11 +73,11 @@ char intToConstant(int value)
 	{
 		if (Variables[i].Name == NULL)
 		{
-			sprintf(Variables[i].Name,"%c",lastConstantName);
+			Variables[i].Name = lastConstantName;
 			lastConstantName++;
 			Variables[i].Address = 99 - i;
 			Variables[i].Value = value;
-			fprintf(output, "%d = %x\n",Variables[i].Address, abs(Variables[i].Value));
+			fprintf(output, "%.2i = %x\n",Variables[i].Address, abs(Variables[i].Value));
 			return Variables[i].Name;
 		}
 
@@ -82,32 +93,27 @@ char intToConstant(int value)
 
 char preCalcProcessing(char* expr)
 {
-	printf("%s\n", expr);
     char* ptr = strtok(expr, " =");
-    char* val = ptr;
-    printf("%s\n", ptr);
-    printf("%s\n", val);
-    printf("PREOK\n");
-    if (!(*(val) >= 'A' && *(val) <= 'Z'))
+    char val;
+    sscanf(ptr,"%c",&val);
+    if (!((val) >= 'A' && (val) <= 'Z'))
     {
-        printf("NOT CORRECT!\n");
+        fprintf(stderr,"NOT CORRECT!\n");
+        exit(EXIT_FAILURE);
     }
-    printf("PREOK\n");
+    printf("VAL --- %c\n", val);
     ptr = strtok(NULL, " ");
-     printf("PREOKEQ\n");
     char* eq = ptr;
-     printf("PREOKEQ\n");
     if (strcmp(eq,"=") != 0)
     {
-        printf("Wrong expression!\n");
+        fprintf(stderr,"Wrong expression!\n");
+        exit(EXIT_FAILURE);
     }
-    printf("PREOK\n");
     ptr = strtok(NULL, "");
     char* exp = ptr;
     int i = 0;
     int pos = 0;
     int j = 0;
-    printf("PREOK\n");
     while (exp[i] != '\n' && exp[i] != '\0')
     {
         if (exp[i] >= '0' && exp[i] <= '9')
@@ -117,7 +123,7 @@ char preCalcProcessing(char* expr)
             num[j] = exp[i];
             j++;
             pos = i;
-            exp[i] = 'a';
+            exp[i] = ' ';
             i++;
             while (exp[i] >= '0' && exp[i] <= '9')
             {
@@ -127,13 +133,12 @@ char preCalcProcessing(char* expr)
                 i++;
             }
             num[j] = '\0';
-            printf("INTTOCS\n");
             exp[pos] = intToConstant(atoi(num));
         }
         i++;
     }
-    printf("PREOK\n");
-    expr = exp;
+    sprintf(expr,"%s",exp);
+    printf("VAL --- %c\n", val);
     return val;
 }
 
@@ -153,7 +158,7 @@ void translation()
 {
 	printf("OK\n");
 	gotoRecords = (struct command*)malloc(sizeof(struct command) * gotoCounter + 1);
-	int instructionCounter =0;
+	int instructionCounter =1;
 	printf("OK\n");
 	while (1)
 	{
@@ -165,8 +170,9 @@ void translation()
 		}
 		instructionCounter++;
 	}
+	basicCommandCouner = instructionCounter;
 	rewind(input);
-	printf("OK\n");
+	printf("INSTRCOUNTER = %d\n",instructionCounter);
 
 	program = (struct command*)malloc(sizeof(struct command) * instructionCounter);
 	printf("OK\n");
@@ -177,7 +183,6 @@ void translation()
 		{
 			if(feof(input))
 			{
-				fprintf(stderr, "Line %d: end of file.\n", i++);
 				return;
 			}
 			else
@@ -194,7 +199,9 @@ void translation()
 	{
 		char* lin;
 
-		char* ptr = strtok(program[i].Command," ");
+		char* thisCommand = (char*)malloc(sizeof(char) * 255);
+		sprintf(thisCommand,"%s",program[i].Command);
+		char* ptr = strtok(thisCommand," ");
 		lin = ptr;
 
 		int line = atoi(lin);
@@ -218,6 +225,7 @@ void translation()
 		char* command;
 		ptr = strtok(NULL," ");
 		command = ptr;
+		printf("%s\n", command);
 		char* arguments;
 		ptr = strtok(NULL, "");
 		arguments = ptr;
@@ -231,7 +239,11 @@ void translation()
 		{
 			gotoCounter++;
 			gotoRecords = realloc(gotoRecords, sizeof(struct command) * gotoCounter + 1);
-			gotoRecords[gotoCounter] = program[i];
+			gotoRecords[gotoCounter].Number = program[i].Number;
+			gotoRecords[gotoCounter].Command = program[i].Command;
+			gotoRecords[gotoCounter].Address = program[i].Address;
+			printf("PROGRAMCOUNT -> %s\n", program[i].Command);
+			printf("GOTOCOUNT -> %s\n", gotoRecords[gotoCounter].Command);
 			assemblerCommandCounter++;
 		}
 
@@ -240,8 +252,11 @@ void translation()
 
 	for (int i = 0; i <= gotoCounter; i++)
 	{
+		printf("GOTO FOR %d\n", i);
+		printf("GOTOADDRESS^ %d\n", gotoRecords[i].Address);
+		printf("GOTO COMMAND^ %s\n", gotoRecords[i].Command);
 		int address = gotoRecords[i].Address;
-		char* ptr = strtok(gotoRecords[i].Command,"");
+		char* ptr = strtok(gotoRecords[i].Command," ");
 		ptr = strtok(NULL," ");
 		ptr = strtok(NULL,"");
 		int operand = atoi(ptr);
@@ -258,7 +273,7 @@ void INPUT(char* arguments)
 		exit(EXIT_FAILURE);
 	}
 
-	fprintf(output, "%d READ %d\n", assemblerCommandCounter, getVariableAddress(arguments));
+	fprintf(output, "%.2i READ %d\n", assemblerCommandCounter, getVariableAddress(arguments[0]));
 	assemblerCommandCounter++;
 }
 
@@ -270,7 +285,7 @@ void PRINT(char *arguments)
 		exit(EXIT_FAILURE);
 	}
 
-	fprintf(output, "%d WRITE %d\n", assemblerCommandCounter, getVariableAddress(arguments));
+	fprintf(output, "%.2i WRITE %d\n", assemblerCommandCounter, getVariableAddress(arguments[0]));
 	assemblerCommandCounter++;
 }
 
@@ -279,13 +294,17 @@ void parsRPN(char* rpn, char* var)
     int i = 0;
     int depth = 0;
     int operand1, operand2;
+    char memoryCounter = '1';
     while (rpn[i] != '\0' && rpn[i] != '\n')
     {
         char x = rpn[i];
         if ((x >= 'a' && x <= 'z') || x >= 'A' && x <= 'Z')
         {
-            fprintf(output, "%d LOAD %d\n", assemblerCommandCounter, getVariableAddress(x));
-            fprintf(output, "%d STORE %d\n", assemblerCommandCounter, assemblerCommandCounter);
+            fprintf(output, "%.2i LOAD %d\n", assemblerCommandCounter, getVariableAddress(x));
+            assemblerCommandCounter++;
+            fprintf(output, "%.2i STORE %d\n", assemblerCommandCounter, getVariableAddress(memoryCounter));
+            memoryCounter++;
+            printf("MEMORYCOUNTER %d\n", memoryCounter);
             assemblerCommandCounter++;
             depth++;
         }
@@ -298,32 +317,33 @@ void parsRPN(char* rpn, char* var)
             }
             else
             {
-              operand1 = assemblerCommandCounter - 1;
-              operand2 = assemblerCommandCounter - 2;
-              fprintf(output, "%d LOAD %d\n", assemblerCommandCounter, operand1); //закидываем самый правый операнд в акк
+              operand1 = getVariableAddress(memoryCounter - 2);
+              operand2 = getVariableAddress(memoryCounter - 1);
+              fprintf(output, "%.2i LOAD %d\n", assemblerCommandCounter, operand1); //закидываем самый правый операнд в акк
               assemblerCommandCounter++; 
               switch (x)
               {
               case '+':
-                    fprintf(output, "%d ADD %d\n", assemblerCommandCounter, operand2);
+                    fprintf(output, "%.2i ADD %d\n", assemblerCommandCounter, operand2);
                     assemblerCommandCounter++;
                     break;
               case '-': //SUB
-                    fprintf(output, "%d SUB %d\n", assemblerCommandCounter, operand2);
+                    fprintf(output, "%.2i SUB %d\n", assemblerCommandCounter, operand2);
                     assemblerCommandCounter++;
                     break;
               case '/': //DIVIDE
-                    fprintf(output, "%d DIVIDE %d\n", assemblerCommandCounter, operand2);
+                    fprintf(output, "%.2i DIVIDE %d\n", assemblerCommandCounter, operand2);
                     assemblerCommandCounter++;
                     break;
               case '*': //MUL
-                    fprintf(output, "%d MUL %d\n", assemblerCommandCounter, operand2);
+                    fprintf(output, "%.2i MUL %d\n", assemblerCommandCounter, operand2);
                     assemblerCommandCounter++;
                     break;
               }
-              fprintf(output, "%d STORE %d\n", assemblerCommandCounter, operand2);
+              fprintf(output, "%.2i STORE %d\n", assemblerCommandCounter, getVariableAddress(memoryCounter - 2));
               assemblerCommandCounter++;  
               depth--;
+              memoryCounter = memoryCounter - 1;
             }
         }
         i++;
@@ -333,7 +353,9 @@ void parsRPN(char* rpn, char* var)
       fprintf(stderr, "Uncorrect LET statement, check your expression.\n");
       exit(EXIT_FAILURE);
     }
-    fprintf(output, "%d STORE %d\n", assemblerCommandCounter, getVariableAddress(var));
+    //printf("VAR %s\n",var );
+    fprintf(output, "%.2i STORE %d\n", assemblerCommandCounter, getVariableAddress(var));
+    assemblerCommandCounter++;
 }
 
 void GOTO(int address,int operand)
@@ -342,20 +364,21 @@ void GOTO(int address,int operand)
 	{
 		if (program[i].Number == operand)
 		{
-			fprintf(output, "%d JUMP %d\n",address, program[i].Address);
+			printf("GOTO NUMBER\n");
+			fprintf(output, "%.2i JUMP %d\n",address, program[i].Address);
 		}
 	}
 }
 
 void IF(char* arguments)
 {
-	printf("IFOK");
+	
 	int mySign = -1;
-	printf("IFOK");
+	
 	int before = 0;
-	printf("IFOK");
+	
 	int after = 0;
-	printf("IFOK");
+	
 	for (int i = 0; i < strlen(arguments); i++)
 	{
 		if ((arguments[i] == '>') || (arguments[i] == '<') || (arguments[i] == '='))
@@ -379,7 +402,7 @@ void IF(char* arguments)
 			}
 		}
 	}
-	printf("IFOK");
+	
 
 	char* expression = (char*)malloc(sizeof(char) * 255);
 	if (!(before) && !(after))
@@ -414,7 +437,7 @@ void IF(char* arguments)
 		}
 		expression[j] = '\0';
 	}
-	printf("IFOK");
+	
 	char* ptr = strtok(expression," ");
 	char* operand1 = ptr;
 	char operand1Name;
@@ -442,14 +465,14 @@ void IF(char* arguments)
 			exit(EXIT_FAILURE);
 		}
 	}
-	printf("IFOK");
+	
 	ptr = strtok(NULL," ");
 	char* logicalSign = ptr;
-	printf("IFOK");
+	
 	ptr = strtok(NULL," ");
 	char* operand2 = ptr;
 	char operand2Name;
-	printf("IFOK");
+	
 	if (strlen(operand2) > 1)
 	{
 		if(atoi(operand2))
@@ -473,50 +496,52 @@ void IF(char* arguments)
 			exit(EXIT_FAILURE);
 		}
 	}
-	printf("IFOK");
+	
 
-	int falsePosition;
+	int falsePosition = -1;
+	printf("%c\n", logicalSign[0]);
 
-	if  (logicalSign[0] == "<")
+	if  (logicalSign[0] == '<')
 	{
-		fprintf(output, "%d LOAD %d\n",assemblerCommandCounter,getVariableAddress(operand1Name));
+		printf("IFADDRESS -> %d %c \n", getVariableAddress(operand1Name), operand1Name);
+		fprintf(output, "%.2i LOAD %d\n",assemblerCommandCounter,getVariableAddress(operand1Name));
 		assemblerCommandCounter++;
-		fprintf(output, "%d SUB %d\n", assemblerCommandCounter,getVariableAddress(operand2Name));
+		fprintf(output, "%.2i SUB %d\n", assemblerCommandCounter,getVariableAddress(operand2Name));
 		assemblerCommandCounter++;
-		fprintf(output, "%d JNEG %d\n",assemblerCommandCounter, assemblerCommandCounter + 2);
+		fprintf(output, "%.2i JNEG %d\n",assemblerCommandCounter, assemblerCommandCounter + 2);
 		assemblerCommandCounter++;
 		falsePosition = assemblerCommandCounter;
 		assemblerCommandCounter++;
 	}
-	else if (logicalSign[0] == ">")
+	else if (logicalSign[0] == '>')
 	{
-		fprintf(output, "%d LOAD %d\n",assemblerCommandCounter,getVariableAddress(operand2Name));
+		fprintf(output, "%.2i LOAD %d\n",assemblerCommandCounter,getVariableAddress(operand2Name));
 		assemblerCommandCounter++;
-		fprintf(output, "%d SUB %d\n", assemblerCommandCounter,getVariableAddress(operand1Name));
+		fprintf(output, "%.2i SUB %d\n", assemblerCommandCounter,getVariableAddress(operand1Name));
 		assemblerCommandCounter++;
-		fprintf(output, "%d JNEG %d\n",assemblerCommandCounter, assemblerCommandCounter + 2);
+		fprintf(output, "%.2i JNEG %d\n",assemblerCommandCounter, assemblerCommandCounter + 2);
 		assemblerCommandCounter++;
 		falsePosition = assemblerCommandCounter;
 		assemblerCommandCounter++;
 	}
-	else if (logicalSign[0] == "=")
+	else if (logicalSign[0] == '=')
 	{
-		fprintf(output, "%d LOAD %d\n",assemblerCommandCounter,getVariableAddress(operand1Name));
+		fprintf(output, "%.2i LOAD %d\n",assemblerCommandCounter,getVariableAddress(operand1Name));
 		assemblerCommandCounter++;
-		fprintf(output, "%d SUB %d\n", assemblerCommandCounter,getVariableAddress(operand2Name));
+		fprintf(output, "%.2i SUB %d\n", assemblerCommandCounter,getVariableAddress(operand2Name));
 		assemblerCommandCounter++;
-		fprintf(output, "%d JZ %d\n",assemblerCommandCounter, assemblerCommandCounter + 2);
+		fprintf(output, "%.2i JZ %d\n",assemblerCommandCounter, assemblerCommandCounter + 2);
 		assemblerCommandCounter++;
 		falsePosition = assemblerCommandCounter;
 		assemblerCommandCounter++;
 	}
-	printf("IFOK");
+	
 
 	ptr = strtok(NULL," ");
 	char* command = ptr;
 	ptr = strtok(NULL,"");
 	char* commandArguments = ptr;
-	printf("IFOK");
+	
 	if (strcmp(command,"IF") == 0)
 	{
 		fprintf(stderr, "Multiple IF!\n");
@@ -532,34 +557,34 @@ void IF(char* arguments)
 		gotoRecords = realloc(gotoRecords, sizeof(struct command) * gotoCounter + 1);
 		struct command gotoCommand;
 		gotoCommand.Address = assemblerCommandCounter;
-		char buff = (char*)malloc(sizeof(char) * 255);
-		sprintf(buff,"00 GOTO %s",arguments);
+		char* buff = (char*)malloc(sizeof(char) * 255);
+		printf("FALSEPOSITION = %d\n",falsePosition );
+		printf("IFGOTOARGS - %s\n", commandArguments);
+		sprintf(buff,"%d GOTO %s",falsePosition,commandArguments);
 		gotoCommand.Command = buff;
-		gotoRecords[gotoCounter];
+		gotoRecords[gotoCounter] = gotoCommand;
 		assemblerCommandCounter++;
 	}
-	printf("IFOK");
+	
 
-	fprintf(output, "%d JUMP %d\n", falsePosition, assemblerCommandCounter);
-	printf("IFOK");
+	fprintf(output, "%.2i JUMP %d\n", falsePosition, assemblerCommandCounter);
+	//assemblerCommandCounter++;
+	
 }
 
 void LET(char* arguments)
 {
 	char fin[255];
 	char var;
-	printf("LETOK\n");
 	var = preCalcProcessing(arguments);
-	printf("LETOK\n");
+	printf("VAR %c",var);
 	translateToRPN(arguments, fin);
-	printf("LETOK\n");
 	parsRPN(fin, var);
-	printf("LETOK\n");
 }
 
 void END()
 {
-	fprintf(output, "%d HALT 00\n", assemblerCommandCounter);
+	fprintf(output, "%.2i HALT 00\n", assemblerCommandCounter);
 	assemblerCommandCounter++;
 }
 
@@ -615,13 +640,12 @@ int main(int argc, const char** argv)
 	loadFile(argv[1], "tmp.sa");
 	
 	translation();
-	printf("OK\n");
+	fclose(input);
+	fclose(output);
 
 
 	char sat[255];
-	sprintf(sat,"./sat tmp.sa %s",argv[2]);
-	printf("OK\n");
+	sprintf(sat,"./sat tmp.sa %s\n",argv[2]);
 	system(sat);
-	printf("OK\n");
 	return 0;
 }

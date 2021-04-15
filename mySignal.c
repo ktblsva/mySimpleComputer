@@ -10,9 +10,16 @@ int ms_setSignals()
 int ms_timerHandler(int sig)
 {
 	CU();
-
 	int value;
 	sc_regGet(FLAG_IGNOR_PULS, &value);
+	if((sc_instructionCounter < 99 && sc_instructionCounter >= 0) && !value)
+	{
+		sc_instructionCounter++;
+	}
+	else if (sc_instructionCounter >= 99)
+	{
+		sc_instructionCounter = 0;
+	}
 	if (!value)
 	{
 		alarm(1);
