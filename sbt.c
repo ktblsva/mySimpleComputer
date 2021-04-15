@@ -420,11 +420,6 @@ void IF(char* arguments)
 	{
 		if ((arguments[i] == '>') || (arguments[i] == '<') || (arguments[i] == '='))
 		{
-			if (mySign != -1)
-			{
-				fprintf(stderr, "Wrong statement!\n");
-				exit(EXIT_FAILURE);
-			}
 
 			mySign = i;
 
@@ -437,6 +432,7 @@ void IF(char* arguments)
 			{
 				after = 1;
 			}
+			break;
 		}
 	}
 	
