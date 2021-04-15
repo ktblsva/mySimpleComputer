@@ -114,6 +114,41 @@ char preCalcProcessing(char* expr)
     int i = 0;
     int pos = 0;
     int j = 0;
+    int operat = 0;
+    int flg = 1;
+    int m = 0;
+    char* assign = (char*)malloc(sizeof(char) * 255);
+    printf("STRLEN EXP %d\n%s\n", strlen(exp), exp);
+    for(int k = 0; k < strlen(exp); k++)
+    {
+    	if (exp[k] == '-' && flg)
+        {
+        	assign[m] = '0';
+        	m++;
+        }
+        flg = 0;
+    	if (exp[k] == '+' || exp[k] == '-' || exp[k] == '/' || exp[k] == '*')
+        {
+        	operat++;
+        }
+        if (exp[k] == '+' || exp[k] == '-' || exp[k] == '/' || exp[k] == '*' || exp[k] == '(')
+        {
+        	flg = 1;
+        }
+       
+        assign[m] = exp[k];
+		m++;
+    }
+    
+    printf("AFTER INSERT 0 -- %s", assign);
+    if (operat == 0)//0+ перед ним, если перед минусом нет аргумента, то пишем 0 перед миунсом
+    {
+    	sprintf(exp, "0 + %s", assign);
+    }
+	else
+	{
+		sprintf(exp, "%s", assign);
+	}
     while (exp[i] != '\n' && exp[i] != '\0')
     {
         if (exp[i] >= '0' && exp[i] <= '9')
@@ -137,8 +172,10 @@ char preCalcProcessing(char* expr)
         }
         i++;
     }
-    sprintf(expr,"%s",exp);
-    printf("VAL --- %c\n", val);
+    sprintf(expr,"%s", exp);
+    
+    
+    printf("VAL --- %c\n%s\n", val, expr);
     return val;
 }
 
