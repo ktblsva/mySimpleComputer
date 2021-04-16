@@ -1,0 +1,3 @@
+10 LET C = 10+-5
+11 PRINT C
+12 END

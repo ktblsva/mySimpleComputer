@@ -10,7 +10,7 @@
 
 #define ERR_TERM -1
 #define ERR_TERM_SIZE -2
-#define TERM "/dev/tty3"
+#define TERM "/dev/tty"
 
 enum Colors {
   Black,
@@ -25,6 +25,7 @@ enum Colors {
   Default
 };
 
+int mt_readText(char *text, int size);
 int mt_printText(char *text);
 int mt_clrscr(void);
 int mt_goToXY(int x, int y);

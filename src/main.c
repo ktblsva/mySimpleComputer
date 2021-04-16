@@ -1,153 +1,231 @@
-
 #include "mySimpleComputer.h"
 #include "myTerm.h"
+#include "myBigChars.h"
+#include "myReadkey.h"
+#include "mySignal.h"
+#include "myGUI.h"
 #include <time.h>
+#include <unistd.h>
 
-int showKeys(int x, int y) {
-  // int width = 22+15;
-  // int height = 10;
-  mt_goToXY(x + 2, y);
-  mt_printText("Keys:");
-  mt_goToXY(x + 1, y + 1);
-  mt_printText("l  - load");
-  mt_goToXY(x + 1, y + 2);
-  mt_printText("s  - save");
-  mt_goToXY(x + 1, y + 3);
-  mt_printText("r  - run");
-  mt_goToXY(x + 1, y + 4);
-  mt_printText("t  - step");
-  mt_goToXY(x + 1, y + 5);
-  mt_printText("i  - reset");
-  mt_goToXY(x + 1, y + 6);
-  mt_printText("F5 - accumulator");
-  mt_goToXY(x + 1, y + 7);
-  mt_printText("F6 - instructionCounter");
-  mt_goToXY(x + 1, y + 8);
-  mt_printText(" ");
-  return 0;
+int keyHandler(enum keys key);
+
+int main(int argc, char **argv) 
+{
+    sc_regInit();
+    enum keys key;
+    rk_mytermsave();
+    rk_mytermregime(0, 0, 1, 0, 1);
+    mt_clrscr();
+    sc_regSet(FLAG_IGNOR_PULS,1);
+    mt_printText("\E[?25l");
+    ms_setSignals();
+    mg_showGUI(1,1);
+
+    do{
+        rk_readkey(&key);
+        keyHandler(key);
+        mg_showGUI(1,1);
+        
+    } while (key != KEY_q);
+
+    mt_clrscr();
+    //printf("Terminal settings restored.\n");
+    rk_mytermrestore();
+    mt_printText("\E[?12;25h");
+    return 0;
 }
 
-int showFlags(int x, int y) {
-  int width = 22;
-  // int height = 3;
-  mt_goToXY(x + width / 2 - 3 + 1, y);
-  mt_printText("Flags");
-  mt_goToXY(x + width / 2 - 3 - 1, y + 1);
-  for (int i = 1; i <= 5; i++) {
-    int flag;
-    sc_regGet(i, &flag);
-    if (flag) {
-      mt_setFgColor(Red);
-    } else {
-      mt_setFgColor(White);
-    }
-    switch (i) {
-    case 1: {
-      mt_printText("O "); // overflow
-      break;
-    }
-    case 2: {
-      mt_printText("D "); // div by zero
-      break;
-    }
-    case 3: {
-      mt_printText("M "); // out of border memory
-      break;
-    }
-    case 4: {
-      mt_printText("I "); // ignore impulse
-      break;
-    }
-    case 5: {
-      mt_printText("C "); // wrong command
-      break;
-    }
-    }
-  }
-  mt_setFgColor(White);
-  return 0;
-}
+int keyHandler(enum keys key)
+{
 
-int showMemory(int x, int y) {
+    int ignore;
+    sc_regGet(FLAG_IGNOR_PULS,&ignore);
 
-  int width = 10 * 5 + 9 + 2;
-  // int height = 11;
-  // mt_goToXY(x + width / 2 - 3 + 1, y);
-  int wid, heig;
-  mt_getScreenSize(&wid, &heig);
-  printf("%d x %d \n", wid, heig);
-  mt_goToXY(x + width / 2 - 3 + 1, y);
-  mt_printText("Memory");
-  int cell = 0;
-  for (int i = 1; i < 11; i++) {
-    mt_goToXY(2 + x, y + i);
-    for (int j = 1; j < 11; j++) {
-      char buff[6];
-      int value;
-      sc_memoryGet(cell, &value);
-      cell++;
-      sprintf(buff, "+%.4i", value);
-      mt_printText(buff);
-      if (j != 10) {
-        mt_printText(" ");
-      }
-    }
-  }
+    if (ignore)
+    {
 
-  mt_printText("\n");
-  return 0;
-}
+        switch (key) 
+        {
+            case KEY_l:
+            	mt_goToXY(cursorX, cursorY);
+            	mt_printText(" Filename to load:> ");
+            	rk_mytermregime(1,0,0,1,1);
+            	char buffL[255];
+            	mt_readText(buffL, sizeof(buffL));
+            	buffL[strlen(buffL) - 1] = '\0';
+                sc_memoryLoad(buffL);
+                char outputL[255];
+                sprintf(outputL, "Filename to load:> %s", buffL);
+                sc_addOutput(outputL);
+                break;
+            case KEY_s:
+            	mt_goToXY(cursorX, cursorY);
+            	mt_printText(" Filename to save:> ");
+            	char buffS[255];
+            	rk_mytermregime(1,0,0,1,1);
+            	mt_readText(buffS, sizeof(buffS));
+            	buffS[strlen(buffS) - 1] = '\0';
+                sc_memorySave(buffS);
+                char outputS[255];
+                sprintf(outputS, "Filename to save:> %s", buffS);
+                sc_addOutput(outputS);
+                break;
+            case KEY_up:
 
-int main() {
-  srand(time(NULL));
-  sc_memoryInit();
-  for (int i = 0; i < MEMORYSIZE; i++) {
-    sc_memorySet(i, rand() % 100);
-  }
-  sc_memorySave("sc_memory.txt");
-  int value = 0;
-  int cellNumber = -1;
-  printf("Enter number of cell (0-99): ");
-  scanf("%d", &cellNumber);
-  sc_memoryGet(cellNumber, &value);
-  printf("sc_memoryGet: %d - %d \n", cellNumber, value);
-  sc_memoryInit();
-  sc_memoryLoad("sc_memory.txt");
-  printf("Memory: ");
-  for (int i = 0; i < MEMORYSIZE; i++) {
-    printf("%d ", sc_memory[i]);
-  }
+                if ((sc_instructionCounter - 10) >= 0)
+                {
+                    sc_instructionCounter -= 10;
+                }
+                else
+                {
+                    sc_instructionCounter += 90;
+                }
 
-  printf("\n");
-  sc_regInit();
-  sc_regSet(1, 0);
-  sc_regSet(2, 1);
-  sc_regSet(3, 0);
-  sc_regSet(4, 1);
-  sc_regSet(5, 0);
-  printf("Flags of register: ");
-  for (int i = 1; i <= 5; i++) {
-    sc_regGet(i, &value);
-    printf("%d ", value);
-  }
-  printf("\n");
-  sc_regGet(0, 0);
-  printf("\n");
+                break;
+            case KEY_down:
 
-  int comm = -1;
-  int operand = -1;
-  printf("Enter command(0-37): ");
-  scanf("%d", &comm);
-  printf("Enter operand(0-127): ");
-  scanf("%d", &operand);
-  sc_commandEncode(comm, operand, &value);
-  printf("\n %d", value);
-  sc_commandDecode(value, &comm, &operand);
-  printf("\n command: %d \n operand: %d \n", comm, operand);
-  mt_clrscr();
-  showMemory(1, 1);
-  showFlags(10 * 5 + 9 + 2, 9);
-  showKeys(61 - 15 + 1 + 1, 12 + 1);
-  //mt_printText("\E[?25l");
-  return 0;
+                if ((sc_instructionCounter + 10) <= 99)
+                {
+                    sc_instructionCounter += 10;
+                }
+                else
+                {
+                    sc_instructionCounter -= 90;
+                }
+
+                break;
+            case KEY_left:
+
+                if ((sc_instructionCounter - 1) >= 0)
+                {
+                    sc_instructionCounter--;
+                }
+                else
+                {
+                    sc_instructionCounter = 99;
+                }
+
+                break;
+            case KEY_right:
+
+                if ((sc_instructionCounter + 1) <= 99)
+                {
+                    sc_instructionCounter++;
+                }
+                else
+                {
+                    sc_instructionCounter = 0;
+                }
+
+                break;
+            case KEY_f5:
+                mt_goToXY(cursorX,cursorY);
+                mt_printText(" Accumulator:> ");
+                rk_mytermregime(0, 0, 1, 1, 1);
+                char buffAf[2];
+                mt_readText(buffAf, sizeof(buffAf));
+                int sign = 1;
+                if (buffAf[0] == '-' || buffAf[0] == '+')
+                {
+                	rk_mytermregime(0, 0, 4, 1, 1);
+                    if (buffAf[0] == '-')
+                    {
+                	   sign = -1;
+                    }
+                }
+                else
+                {
+                	rk_mytermregime(0, 0, 3, 1, 1);
+                }
+        		char buffAs [5];
+        		mt_readText(buffAs, sizeof(buffAs));
+        		char buffA[6];
+        		if (sign)
+        		{
+        			sprintf(buffA, "%s", buffAf);
+        		}
+        		sprintf(buffA,"%s%s", buffA, buffAs);
+        		int valueA;
+                sscanf(buffA,"%x",&valueA);
+                sc_accumulator = valueA;
+
+                char outputA[255];
+                sprintf(outputA,"Accumulator:> %s", buffA);
+                sc_addOutput(outputA);
+                break;
+            case KEY_f6:
+                mt_goToXY(cursorX, cursorY);
+                mt_printText(" Instruction Counter:> ");
+                rk_mytermregime(0, 0, 2, 1, 1);
+                char buffI[5];
+                mt_readText(buffI, sizeof(buffI));
+                int valueI;
+                sscanf(buffI,"%x",&valueI);
+                
+                if ((valueI >= 0) && (valueI < 100))
+                {
+                    sc_instructionCounter = valueI;
+                    sc_regSet(FLAG_WRONG_ADDRESS,0);
+                    char outputI[255];
+                    sprintf(outputI, "Instruction Counter:> %s", buffI);
+                    sc_addOutput(outputI);
+                }
+                else
+                {
+                    sc_regSet(FLAG_WRONG_ADDRESS,1);
+                }     
+                break;
+            case KEY_enter:
+                mt_goToXY(cursorX, cursorY);
+                mt_printText(" Command:> ");
+                rk_mytermregime(0, 0, 2, 1, 1);
+                char buffM[3];
+                mt_readText(buffM, sizeof(buffM));
+                int commandM;
+                sscanf(buffM,"%x",&commandM);
+                mt_printText(" Operand:> ");
+                rk_mytermregime(0, 0, 2, 1, 1);
+                mt_readText(buffM, sizeof(buffM));
+                int operandM;
+                sscanf(buffM,"%x", &operandM);
+                int valueM;
+                int protection;
+                sc_regSet(FLAG_WRONG_COMMAND, 0);
+                protection = sc_commandEncode(commandM,operandM,&valueM);
+
+                if (protection == 0)
+                {
+                	sc_memorySet(sc_instructionCounter, valueM);
+                	char outputM[255];
+                	sprintf(outputM,"Command:> %X Operand:> %X",commandM, operandM);
+                	sc_addOutput(outputM);
+                }
+                break;  
+            }
+        }
+        if (key == KEY_r)
+        {
+            int valueR;
+            sc_regGet(FLAG_IGNOR_PULS,&valueR);
+
+            if (valueR)
+            {
+                sc_regSet(FLAG_IGNOR_PULS,0);
+                ms_timerHandler(SIGALRM);
+            }
+            else
+            {
+                alarm(0);
+                sc_regSet(FLAG_IGNOR_PULS,1);
+            }
+        }
+        else if (key == KEY_t)
+        {
+            ms_timerHandler(SIGALRM);
+        }
+        else if (key == KEY_i)
+        {
+            raise(SIGUSR1);
+        }
+    return 0;
 }

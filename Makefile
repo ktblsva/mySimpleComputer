@@ -1,39 +1,61 @@
-CFLAGS = -g
+CFLAGS = -g -w
 CC = gcc
-all: SimpleComputer clean
-SimpleComputer: main.o lib.a
+EXECUTABLE = bin/
+SOURCES = src/
+OBJECTS = build/mySimpleComputer.o build/myTerm.o build/myBigChars.o build/myReadkey.o build/mySignal.o build/myGUI.o build/ALU.o build/CU.o
+.PHONY: all clean
+all: bin/SimpleComputer bin/sat bin/sbt cleanBuild
+
+bin/SimpleComputer: build/main.o build/lib.a
 	$(CC) $(CFLAGS) -o $@ $^
 
-main.o: main.c 
+bin/sat: build/sat.o build/mySimpleComputer.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+bin/sbt: build/sbt.o build/rpnTranslator.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+build/main.o: src/main.c 
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-lib.a: mySimpleComputer.o myTerm.o myBigChars.o myReadkey.o mySignal.o myGUI.o ALU.o CU.o
+build/lib.a: $(OBJECTS)
 	ar rcs $@ $^
 
-mySimpleComputer.o: mySimpleComputer.c
+build/mySimpleComputer.o: src/mySimpleComputer.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-myTerm.o: myTerm.c
+build/myTerm.o: src/myTerm.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-myBigChars.o: myBigChars.c
+build/myBigChars.o: src/myBigChars.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-myReadkey.o: myReadkey.c
+build/myReadkey.o: src/myReadkey.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-mySignal.o: mySignal.c
+build/mySignal.o: src/mySignal.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-myGUI.o: myGUI.c
+build/myGUI.o: src/myGUI.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-ALU.o: ALU.c
+build/ALU.o: src/ALU.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-CU.o: CU.c
+build/CU.o: src/CU.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-clean:
-	-rm -rf *.o
-	-rm -rd *.a
+build/sat.o: src/sat.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+build/sbt.o: src/sbt.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+build/rpnTranslator.o: src/rpnTranslator.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+	
+cleanBuild:
+	-rm -rf build/*.o
+
+clean: cleanBuild
+	-rm -rf bin/*

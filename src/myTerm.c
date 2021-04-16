@@ -1,5 +1,15 @@
 #include "myTerm.h"
 
+int mt_readText(char *text,int size) {
+  int terminal = open(TERM, O_RDWR);
+  if (terminal == -1) {
+    return ERR_TERM;
+  }
+  int numRead = read(terminal, text, size);
+  text[numRead] = '\0';
+  return 0;
+}
+
 int mt_printText(char *text) {
   int terminal = open(TERM, O_RDWR);
   if (terminal == -1) {
@@ -27,7 +37,7 @@ int mt_getScreenSize(int *rows, int *columns) {
     unsigned short xpixel;
     unsigned short ypixel;
   };
-
+  
   struct winsize ws;
 
   if (!ioctl(1, TIOCGWINSZ, &ws)) {
