@@ -125,10 +125,13 @@ int keyHandler(enum keys key)
                 char buffAf[2];
                 mt_readText(buffAf, sizeof(buffAf));
                 int sign = 1;
-                if (buffAf[0] == '-')
+                if (buffAf[0] == '-' || buffAf[0] == '+')
                 {
                 	rk_mytermregime(0, 0, 4, 1, 1);
-                	sign = -1;
+                    if (buffAf[0] == '-')
+                    {
+                	   sign = -1;
+                    }
                 }
                 else
                 {
@@ -187,6 +190,7 @@ int keyHandler(enum keys key)
                 sscanf(buffM,"%x", &operandM);
                 int valueM;
                 int protection;
+                sc_regSet(FLAG_WRONG_COMMAND, 0);
                 protection = sc_commandEncode(commandM,operandM,&valueM);
 
                 if (protection == 0)

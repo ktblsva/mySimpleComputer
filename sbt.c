@@ -27,6 +27,7 @@ struct variable
 };
 
 struct variable Variables[52];
+int variableCount = 0;
 char lastConstantName = 'a';
 
 struct command
@@ -52,7 +53,6 @@ int getVariableAddress(char name)
 {
 	for (int i = 0; i < 52; i++)
 	{
-		printf("VARIABLES : %c %c\n",name, Variables[i].Name);
 		if (Variables[i].Name == name)
 		{
 			return Variables[i].Address;
@@ -62,6 +62,7 @@ int getVariableAddress(char name)
 		{
 			Variables[i].Name = name;
 			Variables[i].Address = 99 - i;
+			variableCount++;
 			return Variables[i].Address;
 		}
 	}
@@ -78,6 +79,7 @@ char intToConstant(int value)
 			Variables[i].Address = 99 - i;
 			Variables[i].Value = value;
 			fprintf(output, "%.2i = %x\n",Variables[i].Address, abs(Variables[i].Value));
+			variableCount++;
 			return Variables[i].Name;
 		}
 
@@ -101,7 +103,6 @@ char preCalcProcessing(char* expr)
         fprintf(stderr,"NOT CORRECT!\n");
         exit(EXIT_FAILURE);
     }
-    printf("VAL --- %c\n", val);
     ptr = strtok(NULL, " ");
     char* eq = ptr;
     if (strcmp(eq,"=") != 0)
@@ -118,7 +119,6 @@ char preCalcProcessing(char* expr)
     int flg = 1;
     int m = 0;
     char* assign = (char*)malloc(sizeof(char) * 255);
-    printf("STRLEN EXP %d\n%s\n", strlen(exp), exp);
     for(int k = 0; k < strlen(exp); k++)
     {
     	if (exp[k] == '-' && flg)
@@ -139,8 +139,6 @@ char preCalcProcessing(char* expr)
         assign[m] = exp[k];
 		m++;
     }
-    
-    printf("AFTER INSERT 0 -- %s", assign);
     if (operat == 0)//0+ перед ним, если перед минусом нет аргумента, то пишем 0 перед миунсом
     {
     	sprintf(exp, "0 + %s", assign);
@@ -175,7 +173,6 @@ char preCalcProcessing(char* expr)
     sprintf(expr,"%s", exp);
     
     
-    printf("VAL --- %c\n%s\n", val, expr);
     return val;
 }
 
@@ -193,10 +190,8 @@ void loadFile(const char* filename, const char* secondFilename)
 
 void translation()
 {
-	printf("OK\n");
 	gotoRecords = (struct command*)malloc(sizeof(struct command) * gotoCounter + 1);
 	int instructionCounter =1;
-	printf("OK\n");
 	while (1)
 	{
 		char temp[255];
@@ -209,10 +204,8 @@ void translation()
 	}
 	basicCommandCouner = instructionCounter;
 	rewind(input);
-	printf("INSTRCOUNTER = %d\n",instructionCounter);
 
 	program = (struct command*)malloc(sizeof(struct command) * instructionCounter);
-	printf("OK\n");
 	for (int i = 0 ;i < instructionCounter; i++)
 	{
 		program[i].Command = (char*)malloc(sizeof(char) * 255);
@@ -230,7 +223,6 @@ void translation()
 		}
 
 	}
-	printf("OK\n");
 
 	for (int i = 0; i < instructionCounter; i++)
 	{
@@ -262,7 +254,6 @@ void translation()
 		char* command;
 		ptr = strtok(NULL," ");
 		command = ptr;
-		printf("%s\n", command);
 		char* arguments;
 		ptr = strtok(NULL, "");
 		arguments = ptr;
@@ -279,19 +270,13 @@ void translation()
 			gotoRecords[gotoCounter].Number = program[i].Number;
 			gotoRecords[gotoCounter].Command = program[i].Command;
 			gotoRecords[gotoCounter].Address = program[i].Address;
-			printf("PROGRAMCOUNT -> %s\n", program[i].Command);
-			printf("GOTOCOUNT -> %s\n", gotoRecords[gotoCounter].Command);
 			assemblerCommandCounter++;
 		}
 
 	}
-	printf("OK\n");
 
 	for (int i = 0; i <= gotoCounter; i++)
 	{
-		printf("GOTO FOR %d\n", i);
-		printf("GOTOADDRESS^ %d\n", gotoRecords[i].Address);
-		printf("GOTO COMMAND^ %s\n", gotoRecords[i].Command);
 		int address = gotoRecords[i].Address;
 		char* ptr = strtok(gotoRecords[i].Command," ");
 		ptr = strtok(NULL," ");
@@ -299,7 +284,6 @@ void translation()
 		int operand = atoi(ptr);
 		GOTO(address,operand);
 	}
-	printf("OK\n");
 }
 
 void INPUT(char* arguments)
@@ -341,7 +325,6 @@ void parsRPN(char* rpn, char* var)
             assemblerCommandCounter++;
             fprintf(output, "%.2i STORE %d\n", assemblerCommandCounter, getVariableAddress(memoryCounter));
             memoryCounter++;
-            printf("MEMORYCOUNTER %d\n", memoryCounter);
             assemblerCommandCounter++;
             depth++;
         }
@@ -390,7 +373,6 @@ void parsRPN(char* rpn, char* var)
       fprintf(stderr, "Uncorrect LET statement, check your expression.\n");
       exit(EXIT_FAILURE);
     }
-    //printf("VAR %s\n",var );
     fprintf(output, "%.2i STORE %d\n", assemblerCommandCounter, getVariableAddress(var));
     assemblerCommandCounter++;
 }
@@ -401,7 +383,6 @@ void GOTO(int address,int operand)
 	{
 		if (program[i].Number == operand)
 		{
-			printf("GOTO NUMBER\n");
 			fprintf(output, "%.2i JUMP %d\n",address, program[i].Address);
 		}
 	}
@@ -532,11 +513,9 @@ void IF(char* arguments)
 	
 
 	int falsePosition = -1;
-	printf("%c\n", logicalSign[0]);
 
 	if  (logicalSign[0] == '<')
 	{
-		printf("IFADDRESS -> %d %c \n", getVariableAddress(operand1Name), operand1Name);
 		fprintf(output, "%.2i LOAD %d\n",assemblerCommandCounter,getVariableAddress(operand1Name));
 		assemblerCommandCounter++;
 		fprintf(output, "%.2i SUB %d\n", assemblerCommandCounter,getVariableAddress(operand2Name));
@@ -591,8 +570,6 @@ void IF(char* arguments)
 		struct command gotoCommand;
 		gotoCommand.Address = assemblerCommandCounter;
 		char* buff = (char*)malloc(sizeof(char) * 255);
-		printf("FALSEPOSITION = %d\n",falsePosition );
-		printf("IFGOTOARGS - %s\n", commandArguments);
 		sprintf(buff,"%d GOTO %s",falsePosition,commandArguments);
 		gotoCommand.Command = buff;
 		gotoRecords[gotoCounter] = gotoCommand;
@@ -610,7 +587,6 @@ void LET(char* arguments)
 	char fin[255];
 	char var;
 	var = preCalcProcessing(arguments);
-	printf("VAR %c",var);
 	translateToRPN(arguments, fin);
 	parsRPN(fin, var);
 }
@@ -629,27 +605,22 @@ void function(char* command, char* arguments)
 	}
 	else if (strcmp(command,"INPUT") == 0)
 	{
-		printf("IN\n");
 		INPUT(arguments);
 	}
 	else if (strcmp(command,"PRINT") == 0)
 	{
-		printf("PR\n");
 		PRINT(arguments);
 	} 
 	else if(strcmp(command,"IF") == 0)
 	{
-		printf("IF\n");
 		IF(arguments);
 	}
 	else if(strcmp(command,"LET") == 0)
 	{
-		printf("LET\n");
 		LET(arguments);
 	}
 	else if(strcmp(command, "END") == 0)
 	{
-		printf("END\n");
 		END();
 	}
 	else
@@ -676,9 +647,23 @@ int main(int argc, const char** argv)
 	fclose(input);
 	fclose(output);
 
+	if (variableCount + assemblerCommandCounter > 100)
+	{
+		fprintf(stderr, "RAM overflow error!\n");
+		system("rm -rf tmp.sa");
+	}
 
 	char sat[255];
 	sprintf(sat,"./sat tmp.sa %s\n",argv[2]);
 	system(sat);
+
+	if (argc >= 4)
+	{
+		if (argv[3][0] == '1')
+		{
+			return 0;
+		}
+	}
+	system("rm -rf tmp.sa");
 	return 0;
 }

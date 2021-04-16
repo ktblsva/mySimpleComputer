@@ -9,21 +9,6 @@ void stack_push(char data, Node** top)
     *top = tmp;
 }
 
-void stack_print(Node* top)
-{
-    if (top == NULL) printf("Stack/Queue is empty!\n");
-    else
-    {
-        Node* tmp = top;
-        while (tmp)
-        {
-            printf("%d ", tmp->data);
-            tmp = tmp->next;
-        }
-        printf("\n");
-    }
-}
-
 char stack_pop(Node** top)
 {
     Node* tmp;
@@ -138,7 +123,6 @@ char* translateToRPN(char* inf, char* rpn)
         }
     }
     rpn[j] = '\0';
-    printf("RPN - %s\n", rpn);
     return rpn;
 }
 

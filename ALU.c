@@ -18,6 +18,7 @@ int ALU(int command, int operand)
 					sc_regSet(FLAG_DIV_BY_ZERO, 1);
 					return -1;
 				}
+				sc_regSet(FLAG_DIV_BY_ZERO, 0);
 				sc_accumulator /= tmp;
 				break;
 		case 0x33: //произведение
