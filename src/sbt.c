@@ -190,7 +190,7 @@ void loadFile(const char* filename, const char* secondFilename)
 
 void translation()
 {
-	gotoRecords = (struct command*)malloc(sizeof(struct command) * gotoCounter + 1);
+
 	int instructionCounter =1;
 	while (1)
 	{
@@ -204,8 +204,9 @@ void translation()
 	}
 	basicCommandCouner = instructionCounter;
 	rewind(input);
-
+	
 	program = (struct command*)malloc(sizeof(struct command) * instructionCounter);
+	gotoRecords = (struct command*)malloc(sizeof(struct command) * instructionCounter);
 	for (int i = 0 ;i < instructionCounter; i++)
 	{
 		program[i].Command = (char*)malloc(sizeof(char) * 255);
@@ -266,7 +267,7 @@ void translation()
 		else
 		{
 			gotoCounter++;
-			gotoRecords = realloc(gotoRecords, sizeof(struct command) * gotoCounter + 1);
+			//gotoRecords = realloc(gotoRecords, sizeof(struct command) * gotoCounter + 1);
 			gotoRecords[gotoCounter].Number = program[i].Number;
 			gotoRecords[gotoCounter].Command = program[i].Command;
 			gotoRecords[gotoCounter].Address = program[i].Address;
