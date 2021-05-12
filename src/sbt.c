@@ -385,8 +385,11 @@ void GOTO(int address,int operand)
 		if (program[i].Number == operand)
 		{
 			fprintf(output, "%.2i JUMP %d\n",address, program[i].Address);
+			return;
 		}
 	}
+	fprintf(stderr, "Reference to an inspecifed memory location.\n");
+    exit(EXIT_FAILURE);
 }
 
 void IF(char* arguments)
