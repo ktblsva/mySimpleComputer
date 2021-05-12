@@ -22,7 +22,7 @@ int ms_timerHandler(int sig)
 	}
 	if (!value)
 	{
-		alarm(1);
+		ualarm(400,0);
 	}
 
 	return 0;
